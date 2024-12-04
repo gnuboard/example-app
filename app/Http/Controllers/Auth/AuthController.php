@@ -40,12 +40,13 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $validated = $request->validate([
-            'name' => ['required', 'string', 'min:2', 'max:255'],
+            'name' => ['required', 'string', 'min:2', 'max:255', 'regex:/^[a-zA-Z가-힣\s]+$/'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ], [
             'name.required' => '이름은 필수입니다.',
             'name.min' => '이름은 최소 2글자 이상이어야 합니다.',
+            'name.regex' => '이름은 영문자와 한글만 입력 가능합니다.',
             'email.required' => '이메일은 필수입니다.',
             'email.email' => '올바른 이메일 형식이 아닙니다.',
             'email.unique' => '이미 사용중인 이메일입니다.',

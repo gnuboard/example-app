@@ -1,31 +1,27 @@
-<x-guest-layout>
-    <div class="mb-4 text-sm text-gray-600 dark:text-gray-400">
-        {{ __('Thanks for signing up! Before getting started, could you verify your email address by clicking on the link we just emailed to you? If you didn\'t receive the email, we will gladly send you another.') }}
-    </div>
+@extends('layouts.app')
 
-    @if (session('status') == 'verification-link-sent')
-        <div class="mb-4 font-medium text-sm text-green-600 dark:text-green-400">
-            {{ __('A new verification link has been sent to the email address you provided during registration.') }}
-        </div>
-    @endif
+@section('content')
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-md mx-auto bg-gray-800 rounded-lg shadow-md p-6">
+        <h2 class="text-2xl font-bold text-white mb-4">이메일 인증</h2>
+        
+        @if (session('message'))
+            <div class="bg-green-500 text-white p-4 rounded-lg mb-4">
+                {{ session('message') }}
+            </div>
+        @endif
+        
+        <p class="text-white mb-4">
+            계정을 사용하기 전에 이메일 주소를 인증해 주세요.
+            인증 이메일을 받지 못하셨다면 아래 버튼을 클릭하여 재발송 할 수 있습니다.
+        </p>
 
-    <div class="mt-4 flex items-center justify-between">
         <form method="POST" action="{{ route('verification.send') }}">
             @csrf
-
-            <div>
-                <x-primary-button>
-                    {{ __('Resend Verification Email') }}
-                </x-primary-button>
-            </div>
-        </form>
-
-        <form method="POST" action="{{ route('logout') }}">
-            @csrf
-
-            <button type="submit" class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
-                {{ __('Log Out') }}
+            <button type="submit" style="background-color: #3b82f6; color: white; padding: 0.5rem 1rem; border-radius: 0.25rem; font-weight: bold; width: 100%; display: block;">
+                인증 이메일 재발송
             </button>
         </form>
     </div>
-</x-guest-layout>
+</div>
+@endsection
