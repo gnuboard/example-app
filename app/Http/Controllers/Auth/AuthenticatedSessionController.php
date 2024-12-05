@@ -24,11 +24,19 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
-        $request->authenticate();
+        $credentials = $request->only('email', 'password');
+        $remember = $request->boolean('remember');
 
-        $request->session()->regenerate();
+        if (Auth::attempt($credentials, $remember)) {
+            $request->session()->regenerate();
+            return redirect()->intended(RouteServiceProvider::HOME);
+        }
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        return back()
+            ->withInput($request->only('email'))
+            ->withErrors([
+                'email' => '이메일 또는 비밀번호가 일치하지 않습니다.',
+            ]);
     }
 
     /**
