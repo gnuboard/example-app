@@ -7,6 +7,34 @@
 
         <title>{{ config('app.name', 'Laravel') }}</title>
 
+        <!-- Tailwind CSS CDN -->
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script>
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        colors: {
+                            primary: {
+                                50: '#eef2ff',
+                                100: '#e0e7ff',
+                                200: '#c7d2fe',
+                                300: '#a5b4fc',
+                                400: '#818cf8',
+                                500: '#6366f1',
+                                600: '#4f46e5',
+                                700: '#4338ca',
+                                800: '#3730a3',
+                                900: '#312e81',
+                            },
+                        },
+                    },
+                },
+            }
+        </script>
+
+        <!-- 기존 스타일 -->
+        @stack('styles')
+
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />

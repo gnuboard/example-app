@@ -12,6 +12,10 @@ class AuthController extends Controller
 {
     public function showLogin()
     {
+        if (auth()->check()) {
+            return redirect('/dashboard');
+        }
+        
         return view('auth.login');
     }
 
@@ -34,7 +38,7 @@ class AuthController extends Controller
 
         return back()->withErrors([
             'email' => '이메일 또는 비밀번호가 일치하지 않습니다.',
-        ]);
+        ])->withInput();
     }
 
     public function register(Request $request)
@@ -47,7 +51,7 @@ class AuthController extends Controller
             'name.required' => '이름은 필수입니다.',
             'name.min' => '이름은 최소 2글자 이상이어야 합니다.',
             'name.regex' => '이름은 영문자와 한글만 입력 가능합니다.',
-            'email.required' => '이메일은 필수입니다.',
+            'email.required' => '이메일은 필��입니다.',
             'email.email' => '올바른 이메일 형식이 아닙니다.',
             'email.unique' => '이미 사용중인 이메일입니다.',
             'password.required' => '비밀번호는 필수입니다.',
