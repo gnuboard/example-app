@@ -25,6 +25,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'social_token',
         'social_refresh_token',
         'email_verified_at',
+        'level',
     ];
 
     /**
@@ -48,4 +49,13 @@ class User extends Authenticatable implements MustVerifyEmail
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($user) {
+            $user->level = config('constants.user_levels.default');
+        });
+    }
 }

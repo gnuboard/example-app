@@ -18,8 +18,40 @@ class SocialiteController extends Controller
     public function callback($provider)
     {
         try {
-            $socialUser = Socialite::driver($provider)->user();
+            $user = Socialite::driver($provider)->user();
+
+            // 사용자 이름이 없을 경우 닉네임으로 대체
+            $name = $user->getName() ?: $user->getNickname();
+
+            $authUser = $this->findOrCreateUser($user, $name);
+
+            // 소셜 로그인 후 level 변경
+            $authUser->update(['level' => config('constants.user_levels.verified')]);
+
+            Auth::login($authUser, true);
+
+            return redirect()->route('dashboard');
+        } catch (\Exception $e) {
+            Log::error('소셜 로그인 에러', [
+                'provider' => $provider,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
             
+            return redirect('/login')->with('error', '소셜 로그인 중 오류가 발생했습니다: ' . $e->getMessage());
+        }
+    }
+
+    private function findOrCreateUser($socialUser, $provider)
+    {
+        try {
+            Log::info('소셜 사용자 정보', [
+                'provider' => $provider,
+                'id' => $socialUser->getId(),
+                'email' => $socialUser->getEmail(),
+                'name' => $socialUser->getName(),
+            ]);
+
             // 기존 사용자 검색
             $existingUser = User::where('social_id', $socialUser->getId())
                 ->where('social_type', $provider)
@@ -34,11 +66,11 @@ class SocialiteController extends Controller
                     'social_refresh_token' => $socialUser->refreshToken,
                     'email_verified_at' => now(),
                 ]);
-                $user = $existingUser;
+                return $existingUser;
             } else {
                 // 새로운 사용자 생성
-                $user = User::create([
-                    'name' => $socialUser->getName(),
+                return User::create([
+                    'name' => $socialUser->getName() ?? $socialUser->getNickname() ?? '사용자_'.time(),
                     'email' => $socialUser->getEmail(),
                     'avatar' => $socialUser->getAvatar(),
                     'social_id' => $socialUser->getId(),
@@ -48,17 +80,13 @@ class SocialiteController extends Controller
                     'email_verified_at' => now(),
                 ]);
             }
-
-            Auth::login($user, true);
-            return redirect()->intended('/dashboard');
         } catch (\Exception $e) {
-            Log::error('소셜 로그인 에러', [
+            Log::error('소셜 로그인 사용자 처리 에러', [
                 'provider' => $provider,
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
-            
-            return redirect('/login')->with('error', '소셜 로그인 중 오류가 발생했습니다: ' . $e->getMessage());
+            throw $e;
         }
     }
 } 
