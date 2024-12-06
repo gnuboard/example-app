@@ -102,6 +102,8 @@ Route::middleware('auth')->group(function () {
 
 Route::get('/auth/{provider}/redirect', [SocialiteController::class, 'redirect'])->name('social.redirect');
 Route::get('/auth/{provider}/callback', [SocialiteController::class, 'callback'])->name('social.callback');
+// Route::get('/auth/{provider}/redirect', [SocialiteController::class, 'redirect'])->name('socialite.redirect');
+// Route::get('/auth/{provider}/callback', [SocialiteController::class, 'callback'])->name('socialite.callback');
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::resource('boards', BoardManageController::class);

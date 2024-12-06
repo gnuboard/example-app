@@ -68,8 +68,20 @@
                        class="bg-gray-800 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded text-center">
                         GitHub로 회원가입
                     </a>
+
+                    <a href="{{ route('social.redirect', 'kakao') }}"
+                        class="bg-[#FEE500] hover:bg-[#FDD000] text-black font-bold py-2 px-4 rounded text-center">
+                            <span>카카오로 회원가입</span>
+                    </a>
                 </div>
             </div>
+
+            <p class="mt-8 text-sm text-center text-gray-600">
+                이미 계정이 있으신가요?
+                <a href="{{ route('login') }}" class="font-medium text-indigo-600 hover:text-indigo-500">
+                    로그인하기
+                </a>
+            </p>
         </div>
     </div>
 </div>

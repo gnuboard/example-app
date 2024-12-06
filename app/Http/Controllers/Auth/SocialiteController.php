@@ -52,10 +52,26 @@ class SocialiteController extends Controller
                 'name' => $socialUser->getName(),
             ]);
 
-            // 기존 사용자 검색
+            // 소셜 ID로 기존 사용자 검색
             $existingUser = User::where('social_id', $socialUser->getId())
                 ->where('social_type', $provider)
                 ->first();
+
+            // 소셜 ID로 찾지 못한 경우 이메일로 검색
+            if (!$existingUser) {
+                $existingUser = User::where('email', $socialUser->getEmail())->first();
+                
+                // 이메일로 찾은 경우 소셜 정보 업데이트
+                if ($existingUser) {
+                    $existingUser->update([
+                        'social_id' => $socialUser->getId(),
+                        'social_type' => $provider,
+                        'social_token' => $socialUser->token,
+                        'social_refresh_token' => $socialUser->refreshToken,
+                    ]);
+                    return $existingUser;
+                }
+            }
 
             if ($existingUser) {
                 // 기존 사용자의 경우 이름을 제외한 나머지 정보만 업데이트
