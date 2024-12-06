@@ -12,7 +12,7 @@ class SocialiteController extends Controller
 {
     public function redirect($provider)
     {
-        if (!in_array($provider, ['google', 'github', 'kakao'])) {
+        if (!in_array($provider, ['google', 'github', 'kakao', 'naver'])) {
             return redirect()->route('login')
                 ->with('error', '지원하지 않는 소셜 로그인입니다.');
         }
@@ -23,7 +23,13 @@ class SocialiteController extends Controller
         //         ->redirect();
         // }
 
-        return Socialite::driver($provider)->redirect();
+        try {
+            return Socialite::driver($provider)->redirect();
+        } catch (\Exception $e) {
+            \Log::error('Socialite Redirect Error: ' . $e->getMessage());
+            return redirect()->route('login')
+                ->with('error', '소셜 로그인 처리 중 오류가 발생했습니다.');
+        }
     }
 
     public function callback($provider)
@@ -32,7 +38,7 @@ class SocialiteController extends Controller
             $user = Socialite::driver($provider)->user();
             
             // 디버깅을 위한 상세 로그
-            \Log::debug('Kakao User Raw Data:', [
+            \Log::debug("{$provider} 소셜로그인 데이터:", [
                 'id' => $user->getId(),           // 카카오 고유 ID
                 'nickname' => $user->getNickname(), // 카카오 닉네임
                 'name' => $user->getName(),       // 이름 (설정된 경우)

@@ -7,6 +7,7 @@ use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use SocialiteProviders\Manager\SocialiteWasCalled;
 use SocialiteProviders\Kakao\KakaoExtendSocialite;
+use SocialiteProviders\Naver\NaverExtendSocialite;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -16,6 +17,7 @@ class EventServiceProvider extends ServiceProvider
         ],
         SocialiteWasCalled::class => [
             KakaoExtendSocialite::class.'@handle',
+            NaverExtendSocialite::class.'@handle',
         ],
     ];
 

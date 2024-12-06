@@ -29,5 +29,13 @@
             </svg>
             카카오로 {{ $type }}
         </a>
+
+        <a href="{{ route('social.redirect', 'naver') }}"
+            class="flex items-center justify-center bg-[#03C75A] hover:bg-[#02B150] text-white font-bold py-2 px-4 rounded text-center">
+            <svg class="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M16.273 12.845L7.376 0H0v24h7.726V11.155L16.624 24H24V0h-7.727z"/>
+            </svg>
+            네이버로 {{ $type }}
+        </a>
     </div>
 </div>
