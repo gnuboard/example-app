@@ -67,7 +67,9 @@ class AuthController extends Controller
 
         Auth::login($user);
 
-        return redirect('dashboard');
+        $user->sendEmailVerificationNotification();
+
+        return redirect()->intended('/dashboard');
     }
 
     public function logout(Request $request)
