@@ -56,25 +56,7 @@
                 </div>
             </form>
 
-            <div class="mt-6 border-t border-gray-200 dark:border-gray-700 pt-6">
-                <p class="text-center text-gray-600 dark:text-gray-400 mb-4">또는 소셜 계정으로 회원가입</p>
-                <div class="flex flex-col space-y-4">
-                    <a href="{{ route('social.redirect', 'google') }}" 
-                       class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded text-center">
-                        Google로 회원가입
-                    </a>
-                    
-                    <a href="{{ route('social.redirect', 'github') }}"
-                       class="bg-gray-800 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded text-center">
-                        GitHub로 회원가입
-                    </a>
-
-                    <a href="{{ route('social.redirect', 'kakao') }}"
-                        class="bg-[#FEE500] hover:bg-[#FDD000] text-black font-bold py-2 px-4 rounded text-center">
-                            <span>카카오로 회원가입</span>
-                    </a>
-                </div>
-            </div>
+            <x-social-login-buttons type="회원가입" />
 
             <p class="mt-8 text-sm text-center text-gray-600">
                 이미 계정이 있으신가요?

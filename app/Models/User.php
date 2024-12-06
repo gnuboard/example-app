@@ -55,4 +55,9 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         $this->notify(new CustomVerifyEmail);
     }
+
+    public function getProfilePhotoUrlAttribute()
+    {
+        return $this->avatar ? $this->avatar : null;
+    }
 }
