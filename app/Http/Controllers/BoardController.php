@@ -9,7 +9,15 @@ class BoardController extends Controller
 {
     public function index()
     {
-        $boards = Board::orderBy('created_at', 'desc')->get();
+        $boards = Board::query()
+            ->when(auth()->check(), function ($query) {
+                $query->where('level', '<=', auth()->user()->level);
+            }, function ($query) {
+                $query->where('level', 0);
+            })
+            ->latest()
+            ->get();
+
         return view('boards.index', compact('boards'));
     }
 

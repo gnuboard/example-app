@@ -2,7 +2,8 @@
 
 return [
     'user_levels' => [
-        'default' => 1,
+        'guest' => 0,
+        'rookie' => 1,
         'verified' => 2,
     ],
 ]; 
