@@ -10,7 +10,7 @@ use App\Http\Controllers\Auth\SocialiteController;
 use App\Http\Controllers\BoardController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\Admin\BoardManageController;
-
+use App\Http\Controllers\TodoController;
 Route::get('/', function () {
     return view('main');
 });
@@ -41,6 +41,11 @@ Route::get('/boards', [BoardController::class, 'index'])->name('boards.index');
 // 전체 게시물 목록 (비회원 접근 가능)
 Route::get('/posts', [PostController::class, 'index'])->name('posts.index');
 
+Route::resource('todos', TodoController::class);
+// Route::get('/todos', [TodoController::class, 'index'])->name('todos.index');
+
+Route::put('/todos/{id}/title', [TodoController::class, 'updateTitle'])->name('todos.update.title');
+Route::put('/todos/{id}/complete', [TodoController::class, 'updateComplete'])->name('todos.update.complete');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -122,3 +127,4 @@ Route::resource('boards', BoardController::class);
 Route::resource('boards.posts', PostController::class)->parameters([
     'boards' => 'name'
 ])->except(['index']);
+
