@@ -10,9 +10,14 @@ return new class extends Migration
     {
         Schema::create('boards', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique();  // URL에서 사용할 게시판 식별자
-            $table->string('title');           // 게시판 표시 이름
-            $table->text('description')->nullable();  // 게시판 설명
+            $table->string('slug')->unique();
+            $table->string('title');
+            $table->string('description')->nullable();
+            $table->string('category');
+            $table->integer('list_level')->default(0);
+            $table->integer('read_level')->default(0);
+            $table->integer('write_level')->default(1);
+            $table->integer('comment_level')->default(1);
             $table->timestamps();
         });
     }

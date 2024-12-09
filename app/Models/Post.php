@@ -31,4 +31,17 @@ class Post extends Model
     {
         return $this->belongsToMany(User::class, 'post_votes')->withTimestamps()->withPivot('is_like');
     }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::created(function ($post) {
+            $post->board()->increment('posts_count');
+        });
+
+        static::deleted(function ($post) {
+            $post->board()->decrement('posts_count');
+        });
+    }
 } 

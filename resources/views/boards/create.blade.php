@@ -1,26 +1,20 @@
-<form method="POST" action="{{ route('board.store', $board_name) }}">
-    @csrf
-    <div class="mb-4">
-        <label>제목</label>
-        <input type="text" name="title" value="{{ old('title') }}" required>
-    </div>
-    
-    @guest
-        <div class="mb-4">
-            <label>작성자명</label>
-            <input type="text" name="writer_name" value="{{ old('writer_name') }}" required>
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+            {{ __('새 게시판 생성하기') }}
+        </h2>
+    </x-slot>
+
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 text-gray-900 dark:text-gray-100">
+                    <form method="POST" action="{{ route('boards.store') }}" class="space-y-6" autocomplete="off">
+                        @csrf
+                        @include('boards._form', ['submitButtonText' => '생성하기'])
+                    </form>
+                </div>
+            </div>
         </div>
-        <div class="mb-4">
-            <label>비밀번호</label>
-            <input type="password" name="password" required>
-            <p class="text-sm text-gray-600">글 수정/삭제시 필요합니다</p>
-        </div>
-    @endguest
-    
-    <div class="mb-4">
-        <label>내용</label>
-        <textarea name="content" required>{{ old('content') }}</textarea>
     </div>
-    
-    <button type="submit">작성하기</button>
-</form> 
+</x-app-layout> auto 

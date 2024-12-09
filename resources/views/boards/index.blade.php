@@ -1,46 +1,75 @@
-@extends('layouts.app')
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+            게시판 목록
+        </h2>
+    </x-slot>
 
-@section('content')
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <div class="mb-8">
-        <div class="flex justify-between items-center">
-            <h1 class="text-3xl font-bold text-gray-900">게시판 목록</h1>
-            @auth
-                <a href="{{ route('boards.create') }}" class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-md shadow-sm transition-colors duration-200">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                    </svg>
-                    새 게시판 만들기
-                </a>
-            @endauth
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 text-gray-900 dark:text-gray-100">
+                    <div class="mb-4">
+                        <a href="{{ route('boards.create') }}" 
+                           class="inline-flex items-center px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md">
+                            새 게시판 만들기
+                        </a>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
+                            <thead class="bg-gray-50 dark:bg-gray-700">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">ID</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">제목</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">카테고리</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">게시글 수</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">목록</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">읽기</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">쓰기</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">댓글</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">생성일</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">관리</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-600">
+                                @foreach($boards as $board)
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <a href="{{ route('posts.index', $board->identifier) }}" class="text-blue-500 hover:text-blue-600">
+                                            {{ $board->identifier }}
+                                        </a>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">{{ $board->title }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">{{ $board->category }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">{{ $board->posts_count }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">{{ $board->list_level }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">{{ $board->read_level }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">{{ $board->write_level }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">{{ $board->comment_level }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">{{ $board->created_at->format('Y-m-d') }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <a href="{{ route('boards.edit', $board->id) }}" 
+                                           class="inline-flex items-center px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded-md mr-2">
+                                            수정
+                                        </a>
+                                        <form action="{{ route('boards.destroy', $board->id) }}" method="POST" class="inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" 
+                                                    onclick="return confirm('정말 삭제하시겠습니까?')"
+                                                    class="inline-flex items-center px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-sm rounded-md">
+                                                삭제
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-
-    <div class="bg-white shadow overflow-hidden sm:rounded-md">
-        <ul class="divide-y divide-gray-200">
-            @foreach($boards as $board)
-                <li>
-                    <a href="/{{ $board->name }}" class="block hover:bg-gray-50">
-                        <div class="px-4 py-4 sm:px-6">
-                            <div class="flex items-center justify-between">
-                                <div class="flex-1">
-                                    <div class="flex items-center gap-3">
-                                        <h3 class="text-lg font-medium text-indigo-600">{{ $board->title }}</h3>
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $board->level >= 5 ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800' }}">
-                                            Lv.{{ $board->level }}
-                                        </span>
-                                    </div>
-                                    <p class="mt-1 text-sm text-gray-500">{{ $board->description }}</p>
-                                </div>
-                                <div class="ml-4">
-                                    <span class="text-sm text-gray-500">/{{ $board->name }}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                </li>
-            @endforeach
-        </ul>
-    </div>
-</div>
-@endsection 
+</x-app-layout> 
