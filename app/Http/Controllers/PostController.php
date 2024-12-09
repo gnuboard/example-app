@@ -6,12 +6,25 @@ use App\Models\Board;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Auth;
 
 class PostController extends Controller
 {
     public function index($identifier)
     {
         $board = Board::where('identifier', $identifier)->firstOrFail();
+        $user = Auth::user();
+        
+        $listLevel = $board->list_level;
+        $userLevel = $user ? $user->level : config('constants.user_levels.visitor');
+        
+        if ($listLevel > $userLevel) {
+            return view('posts.index', [
+                'board' => $board,
+                'error' => '목록을 볼 권한이 없습니다.'
+            ]);
+        }
+        
         $posts = Post::where('board_id', $board->id)
             ->orderBy('created_at', 'desc')
             ->paginate(15);
