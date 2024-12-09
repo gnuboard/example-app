@@ -21,7 +21,8 @@ class PostController extends Controller
         if ($listLevel > $userLevel) {
             return view('posts.index', [
                 'board' => $board,
-                'error' => '목록을 볼 권한이 없습니다.'
+                'error' => '목록을 볼 권한이 없습니다.',
+                'posts' => Post::where('id', 0)->paginate(15)
             ]);
         }
         

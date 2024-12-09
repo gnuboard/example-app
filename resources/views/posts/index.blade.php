@@ -9,11 +9,7 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
-                    @if(isset($error))
-                        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-                            <span class="block sm:inline">{{ $error }}</span>
-                        </div>
-                    @else
+                    <x-error-message :error="$error ?? null">
                         <div class="mb-4">
                             <a href="{{ route('posts.create', $board->identifier) }}" 
                                class="inline-flex items-center px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md">
@@ -62,7 +58,7 @@
                         <div class="mt-4">
                             {{ $posts->links() }}
                         </div>
-                    @endif
+                    </x-error-message>
                 </div>
             </div>
         </div>
