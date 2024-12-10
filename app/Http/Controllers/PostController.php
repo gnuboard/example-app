@@ -28,7 +28,7 @@ class PostController extends Controller
         
         $posts = Post::where('board_id', $board->id)
             ->orderBy('created_at', 'desc')
-            ->paginate(15);
+            ->paginate(10);
 
         return view('posts.index', compact('board', 'posts'));
     }
@@ -92,7 +92,7 @@ class PostController extends Controller
         
         // 해당 게시물을 처음 조회하는 경우에만 조회수 증가
         if (!in_array($sessionKey, $viewedPosts)) {
-            $post->increment('views');
+            $post->increment('view_count');
             $viewedPosts[] = $sessionKey;
             session(['viewed_posts' => $viewedPosts]);
         }

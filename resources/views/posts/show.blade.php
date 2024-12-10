@@ -9,7 +9,7 @@
                     <span class="mx-2">|</span>
                     <span>작성일: {{ $post->created_at->format('Y-m-d H:i') }}</span>
                     <span class="mx-2">|</span>
-                    <span>조회수: {{ number_format($post->views) }}</span>
+                    <span>조회수: {{ number_format($post->view_count) }}</span>
                 </div>
 
                 <div class="prose max-w-none">
