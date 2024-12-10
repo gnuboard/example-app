@@ -41,7 +41,12 @@
                 @endif
 
                 <div class="mt-6 flex justify-between">
-                    <a href="{{ route('posts.index', $board->identifier) }}" 
+                    <a href="{{ route('posts.index', [
+                            'identifier' => $board->identifier,
+                            'search_type' => request()->get('search_type'),
+                            'search' => request()->get('search'),
+                            'page' => $page
+                        ]) }}" 
                        class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">
                         목록으로
                     </a>

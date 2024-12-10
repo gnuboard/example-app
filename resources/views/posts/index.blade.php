@@ -35,7 +35,12 @@
                                                 {{ $posts->total() - ($posts->firstItem() + $index) + 1 }}
                                             </td>
                                             <td class="px-4 py-2 text-sm">
-                                                <a href="{{ route('posts.show', ['identifier' => $board->identifier, 'id' => $post->id]) }}" 
+                                                <a href="{{ route('posts.show', [
+                                                    'identifier' => $board->identifier, 
+                                                    'id' => $post->id,
+                                                    'search_type' => request()->get('search_type'),
+                                                    'search' => request()->get('search')
+                                                ]) }}" 
                                                    class="text-blue-500 hover:text-blue-600">
                                                     {{ $post->title }}
                                                 </a>

@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class PostController extends Controller
 {
-    public function index($identifier)
+    public function index($identifier, Request $request)
     {
         $board = Board::where('identifier', $identifier)->firstOrFail();
         $user = Auth::user();
@@ -29,9 +29,28 @@ class PostController extends Controller
             ]);
         }
         
-        $posts = Post::where('board_id', $board->id)
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
+        $query = Post::where('board_id', $board->id);
+
+        // 검색 조건 추가
+        if ($request->filled('search') && $request->filled('search_type')) {
+            $search = $request->input('search');
+            $searchType = $request->input('search_type');
+
+            if ($searchType === 'title') {
+                $query->where('title', 'like', '%' . $search . '%');
+            } elseif ($searchType === 'content') {
+                $query->where('content', 'like', '%' . $search . '%');
+            } elseif ($searchType === 'author') {
+                $query->whereHas('user', function ($q) use ($search) {
+                    $q->where('name', 'like', '%' . $search . '%');
+                });
+            }
+        }
+
+        $posts = $query->orderBy('id', 'desc')->paginate(10)->appends([
+            'search_type' => $request->search_type,
+            'search' => $request->search
+        ]);
 
         return view('posts.index', compact('board', 'posts'));
     }
@@ -104,6 +123,27 @@ class PostController extends Controller
             abort(404);
         }
 
+        // 검색 조건에 따른 게시글 쿼리 생성
+        $postsQuery = Post::where('board_id', $board->id);
+        
+        if (request('search_type') && request('search')) {
+            $search = request('search');
+            if (request('search_type') === 'title') {
+                $postsQuery->where('title', 'like', "%{$search}%");
+            } elseif (request('search_type') === 'content') {
+                $postsQuery->where('content', 'like', "%{$search}%");
+            } elseif (request('search_type') === 'author') {
+                $postsQuery->whereHas('user', function ($q) use ($search) {
+                    $q->where('name', 'like', '%' . $search . '%');
+                });
+            }
+        }
+
+        // 현재 게시글의 위치를 찾아서 페이지 계산
+        $perPage = 10; // 페이지당 게시글 수
+        $position = $postsQuery->where('id', '>=', $post->id)->count();
+        $page = ceil($position / $perPage);
+            
         // 세션에 저장된 조회 기록 확인
         $viewedPosts = session('viewed_posts', []);
         $sessionKey = 'post_' . $post->id;
@@ -115,7 +155,7 @@ class PostController extends Controller
             session(['viewed_posts' => $viewedPosts]);
         }
 
-        return view('posts.show', compact('board', 'post'));
+        return view('posts.show', compact('board', 'post', 'page'));
     }
 
     public function edit($identifier, $id)
