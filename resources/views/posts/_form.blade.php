@@ -23,7 +23,7 @@
     </div>
 
     <div>
-        <label for="attachments" class="block text-sm font-medium text-gray-700">첨���파일</label>
+        <label for="attachments" class="block text-sm font-medium text-gray-700">첨부파일</label>
         <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md"
              id="dropzone"
              ondrop="handleDrop(event)"
@@ -159,59 +159,66 @@ function updateFileList() {
     const fileList = document.getElementById('fileList');
     const input = document.getElementById('attachments');
     
-    fileList.className = 'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4';
+    fileList.className = 'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-6';
     fileList.innerHTML = '';
     
     Array.from(input.files).forEach((file, index) => {
         const li = document.createElement('li');
-        li.className = 'relative bg-white border border-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-200';
+        li.className = 'group relative bg-white rounded-xl p-2 shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1';
         
         const extension = file.name.split('.').pop().toLowerCase();
         const isImage = ['jpg', 'jpeg', 'png', 'gif'].includes(extension);
         
         let previewHtml = '';
         if (isImage) {
-            // 이미지 파일인 경우 미리보기 생성
             const imageUrl = URL.createObjectURL(file);
             previewHtml = `
-                <div class="aspect-w-1 aspect-h-1 w-full mb-3">
+                <div class="aspect-w-1 aspect-h-1 w-full mb-3 overflow-hidden rounded-lg">
                     <img src="${imageUrl}" 
                          alt="${file.name}" 
-                         class="object-cover w-full h-full rounded-lg"
+                         class="object-cover w-full h-full transform group-hover:scale-105 transition-transform duration-300"
                          onload="URL.revokeObjectURL(this.src)">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </div>
             `;
         } else {
-            // 일반 파일인 경우 아이콘 표시
             let iconColor = 'text-gray-400';
+            let bgColor = 'bg-gray-50';
             if (['pdf'].includes(extension)) {
-                iconColor = 'text-red-500';
+                iconColor = 'text-rose-500';
+                bgColor = 'bg-rose-50';
             } else if (['doc', 'docx'].includes(extension)) {
                 iconColor = 'text-blue-500';
+                bgColor = 'bg-blue-50';
+            } else if (['xls', 'xlsx'].includes(extension)) {
+                iconColor = 'text-emerald-500';
+                bgColor = 'bg-emerald-50';
             }
             
             previewHtml = `
-                <div class="flex justify-center items-center aspect-w-1 aspect-h-1 w-full mb-3 bg-gray-50 rounded-lg">
-                    <svg class="h-16 w-16 ${iconColor}" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M7 21h10a3 3 0 003-3V8a1 1 0 00-.293-.707l-4-4A1 1 0 0015 3H7a3 3 0 00-3 3v12a3 3 0 003 3zm0-2a1 1 0 01-1-1V6a1 1 0 011-1h7v4a1 1 0 001 1h4v8a1 1 0 01-1 1H7z"/>
-                    </svg>
+                <div class="aspect-w-1 aspect-h-1 w-full mb-3 ${bgColor} rounded-lg overflow-hidden">
+                    <div class="flex justify-center items-center p-4 group-hover:scale-105 transition-transform duration-300">
+                        <svg class="h-16 w-16 ${iconColor}" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M7 21h10a3 3 0 003-3V8a1 1 0 00-.293-.707l-4-4A1 1 0 0015 3H7a3 3 0 00-3 3v12a3 3 0 003 3zm0-2a1 1 0 01-1-1V6a1 1 0 011-1h7v4a1 1 0 001 1h4v8a1 1 0 01-1 1H7z"/>
+                        </svg>
+                    </div>
                 </div>
             `;
         }
         
         li.innerHTML = `
             ${previewHtml}
-            <div class="space-y-1">
-                <p class="text-sm font-medium text-gray-900 truncate">
+            <div class="space-y-1 px-1">
+                <p class="text-sm font-medium text-gray-900 truncate group-hover:text-indigo-600 transition-colors duration-200">
                     ${file.name}
                 </p>
-                <p class="text-xs text-gray-500">
+                <p class="text-xs text-gray-500 font-medium">
                     ${(file.size / 1024).toFixed(2)} KB
                 </p>
             </div>
             <button type="button" 
                     onclick="removeFile(${index})" 
-                    class="absolute top-2 right-2 p-1 rounded-full bg-white bg-opacity-75 hover:bg-opacity-100 shadow-sm hover:shadow focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                    class="absolute top-3 right-3 p-1.5 rounded-full bg-white/90 backdrop-blur-sm shadow-sm opacity-0 group-hover:opacity-100 hover:bg-red-50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
                 <svg class="h-4 w-4 text-gray-500 hover:text-red-600 transition-colors duration-200" 
                      fill="none" 
                      stroke="currentColor" 

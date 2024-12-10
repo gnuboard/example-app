@@ -7,6 +7,9 @@ use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class PostController extends Controller
 {
@@ -64,8 +67,11 @@ class PostController extends Controller
             // 다중 파일 처리
             if ($request->hasFile('attachments')) {
                 foreach ($request->file('attachments') as $file) {
-                    $fileName = time() . '_' . $file->getClientOriginalName();
-                    $path = $file->storeAs('attachments', $fileName, 'public');
+                    // 랜덤 해시값으로 파일명 생성 (32자)
+                    $hashedName = Str::random(32);
+                    
+                    // 원본 파일의 확장자는 저장하지 않음
+                    $path = $file->storeAs('attachments', $hashedName, 'public');
                     
                     $post->attachments()->create([
                         'file_path' => $path,
@@ -165,8 +171,11 @@ class PostController extends Controller
             // 새로운 첨부파일 추가
             if ($request->hasFile('attachments')) {
                 foreach ($request->file('attachments') as $file) {
-                    $fileName = time() . '_' . $file->getClientOriginalName();
-                    $path = $file->storeAs('attachments', $fileName, 'public');
+                    // 랜덤 해시값으로 파일명 생성 (32자)
+                    $hashedName = Str::random(32);
+                    
+                    // 원본 파일의 확장자는 저장하지 않음
+                    $path = $file->storeAs('attachments', $hashedName, 'public');
                     
                     $post->attachments()->create([
                         'file_path' => $path,
@@ -222,6 +231,33 @@ class PostController extends Controller
         } catch (\Exception $e) {
             \Log::error('게시물 삭제 오류: ' . $e->getMessage());
             return back()->withErrors(['error' => '게시물 삭제 중 오류가 발생했습니다.']);
+        }
+    }
+
+    public function download($identifier, $id, $attachmentId)
+    {
+        try {
+            $board = Board::where('identifier', $identifier)->firstOrFail();
+            $post = Post::findOrFail($id);
+            $attachment = $post->attachments()->findOrFail($attachmentId);
+
+            if (!Storage::disk('public')->exists($attachment->file_path)) {
+                \Log::error("File not found in storage: {$attachment->file_path}");
+                return back()->with('error', '파일을 찾을 수 없습니다.');
+            }
+
+            return Storage::disk('public')->download(
+                $attachment->file_path,
+                $attachment->original_filename,
+                [
+                    'Content-Type' => $attachment->mime_type,
+                    'Content-Disposition' => 'attachment; filename="' . rawurlencode($attachment->original_filename) . '"'
+                ]
+            );
+
+        } catch (\Exception $e) {
+            \Log::error('File download error: ' . $e->getMessage());
+            return back()->with('error', '파일 다운로드 중 오류가 발생했습니다.');
         }
     }
 }

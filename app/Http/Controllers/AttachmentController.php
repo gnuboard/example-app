@@ -2,52 +2,35 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Post;
+use App\Models\Attachment;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class AttachmentController extends Controller
 {
-    public function download(Post $post)
+    public function download($id)
     {
-        \Log::info('Download method called for post ID: ' . $post->id);
-        
-        if (!$post->attachment) {
-            \Log::warning('No attachment found for post ID: ' . $post->id);
-            abort(404);
+        try {
+            $attachment = Attachment::findOrFail($id);
+            
+            // 파일 존재 여부 확인
+            if (!Storage::disk('public')->exists($attachment->file_path)) {
+                Log::error("File not found in storage: {$attachment->file_path}");
+                return back()->with('error', '파일을 찾을 수 없습니다.');
+            }
+
+            return Storage::disk('public')->download(
+                $attachment->file_path,
+                $attachment->original_filename,
+                [
+                    'Content-Type' => $attachment->mime_type,
+                    'Content-Disposition' => 'attachment; filename="' . rawurlencode($attachment->original_filename) . '"'
+                ]
+            );
+
+        } catch (\Exception $e) {
+            Log::error('File download error: ' . $e->getMessage());
+            return back()->with('error', '파일 다운로드 중 오류가 발생했습니다.');
         }
-
-        $path = $post->attachment;
-        \Log::info('Attempting to download file at path: ' . $path);
-        
-        if (!Storage::disk('public')->exists($path)) {
-            \Log::error('File does not exist at path: ' . $path);
-            abort(404);
-        }
-
-        \Log::info('File found, initiating download for path: ' . $path);
-        return Storage::disk('public')->download($path);
-    }
-
-    public function show($postId)
-    {
-        \Log::info('Attachment show method called for post ID: ' . $postId);
-        
-        $post = Post::findOrFail($postId);
-        
-        if (!$post->attachment) {
-            \Log::warning('No attachment found for post ID: ' . $postId);
-            abort(404);
-        }
-
-        $path = storage_path('app/public/' . $post->attachment);
-        \Log::info('Attempting to access file at path: ' . $path);
-        
-        if (!file_exists($path)) {
-            \Log::error('File does not exist at path: ' . $path);
-            abort(404);
-        }
-
-        \Log::info('File found, returning response for path: ' . $path);
-        return response()->file($path);
     }
 } 
