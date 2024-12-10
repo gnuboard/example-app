@@ -23,7 +23,7 @@
     </div>
 
     <div>
-        <label for="attachments" class="block text-sm font-medium text-gray-700">첨부파일</label>
+        <label for="attachments" class="block text-sm font-medium text-gray-700">첨���파일</label>
         <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md"
              id="dropzone"
              ondrop="handleDrop(event)"
@@ -159,17 +159,93 @@ function updateFileList() {
     const fileList = document.getElementById('fileList');
     const input = document.getElementById('attachments');
     
+    fileList.className = 'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4';
     fileList.innerHTML = '';
-    Array.from(input.files).forEach(file => {
+    
+    Array.from(input.files).forEach((file, index) => {
         const li = document.createElement('li');
-        li.className = 'flex items-center space-x-2 text-sm text-gray-600';
+        li.className = 'relative bg-white border border-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-200';
+        
+        const extension = file.name.split('.').pop().toLowerCase();
+        const isImage = ['jpg', 'jpeg', 'png', 'gif'].includes(extension);
+        
+        let previewHtml = '';
+        if (isImage) {
+            // 이미지 파일인 경우 미리보기 생성
+            const imageUrl = URL.createObjectURL(file);
+            previewHtml = `
+                <div class="aspect-w-1 aspect-h-1 w-full mb-3">
+                    <img src="${imageUrl}" 
+                         alt="${file.name}" 
+                         class="object-cover w-full h-full rounded-lg"
+                         onload="URL.revokeObjectURL(this.src)">
+                </div>
+            `;
+        } else {
+            // 일반 파일인 경우 아이콘 표시
+            let iconColor = 'text-gray-400';
+            if (['pdf'].includes(extension)) {
+                iconColor = 'text-red-500';
+            } else if (['doc', 'docx'].includes(extension)) {
+                iconColor = 'text-blue-500';
+            }
+            
+            previewHtml = `
+                <div class="flex justify-center items-center aspect-w-1 aspect-h-1 w-full mb-3 bg-gray-50 rounded-lg">
+                    <svg class="h-16 w-16 ${iconColor}" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M7 21h10a3 3 0 003-3V8a1 1 0 00-.293-.707l-4-4A1 1 0 0015 3H7a3 3 0 00-3 3v12a3 3 0 003 3zm0-2a1 1 0 01-1-1V6a1 1 0 011-1h7v4a1 1 0 001 1h4v8a1 1 0 01-1 1H7z"/>
+                    </svg>
+                </div>
+            `;
+        }
+        
         li.innerHTML = `
-            <svg class="h-4 w-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 0v12h8V4H6z" clip-rule="evenodd" />
-            </svg>
-            <span>${file.name} (${(file.size / 1024).toFixed(2)} KB)</span>
+            ${previewHtml}
+            <div class="space-y-1">
+                <p class="text-sm font-medium text-gray-900 truncate">
+                    ${file.name}
+                </p>
+                <p class="text-xs text-gray-500">
+                    ${(file.size / 1024).toFixed(2)} KB
+                </p>
+            </div>
+            <button type="button" 
+                    onclick="removeFile(${index})" 
+                    class="absolute top-2 right-2 p-1 rounded-full bg-white bg-opacity-75 hover:bg-opacity-100 shadow-sm hover:shadow focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                <svg class="h-4 w-4 text-gray-500 hover:text-red-600 transition-colors duration-200" 
+                     fill="none" 
+                     stroke="currentColor" 
+                     viewBox="0 0 24 24">
+                    <path stroke-linecap="round" 
+                          stroke-linejoin="round" 
+                          stroke-width="2" 
+                          d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
         `;
         fileList.appendChild(li);
     });
+}
+
+function removeFile(index) {
+    const newDataTransfer = new DataTransfer();
+    const files = Array.from(globalFiles.files);
+    
+    // 선택된 인덱스를 제외한 모든 파일을 새 DataTransfer에 추가
+    files.forEach((file, i) => {
+        if (i !== index) {
+            newDataTransfer.items.add(file);
+        }
+    });
+    
+    // globalFiles 업데이트
+    globalFiles = newDataTransfer;
+    
+    // input 파일 목록 업데이트
+    const input = document.getElementById('attachments');
+    input.files = globalFiles.files;
+    
+    // 파일 목록 UI 업데이트
+    updateFileList();
 }
 </script> 
