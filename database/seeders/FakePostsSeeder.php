@@ -30,9 +30,9 @@ class FakePostsSeeder extends Seeder
 
         $this->command->info("총 {$users->count()}명의 사용자를 찾았습니다.");
         $this->command->info('가짜 게시물 생성 시작...');
-        $bar = $this->command->getOutput()->createProgressBar(10000);
+        $bar = $this->command->getOutput()->createProgressBar(1000);
 
-        for ($i = 0; $i < 10000; $i++) {
+        for ($i = 0; $i < 1000; $i++) {
             // 한글 제목 생성
             $title = $faker->randomElement([
                 $faker->realText(20),
@@ -65,6 +65,6 @@ class FakePostsSeeder extends Seeder
         }
 
         $bar->finish();
-        $this->command->info("\n10000개의 가짜 게시물이 생성되었습니다.");
+        $this->command->info("\n1000개의 가짜 게시물이 생성되었습니다.");
     }
 } 

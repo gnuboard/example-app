@@ -47,9 +47,11 @@ class PostController extends Controller
             $validated = $request->validate([
                 'title' => 'required|string|max:255',
                 'content' => 'required|string',
+                'attachments.*' => 'nullable|file|max:10240' // 다중 파일 업로드 검증
             ], [
                 'title.required' => '제목을 입력해주세요.',
                 'content.required' => '내용을 입력해주세요.',
+                'attachments.*.max' => '각 파일의 크기는 10MB를 초과할 수 없습니다.'
             ]);
 
             $post = new Post();
@@ -59,27 +61,37 @@ class PostController extends Controller
             $post->content = $validated['content'];
             $post->save();
 
+            // 다중 파일 처리
+            if ($request->hasFile('attachments')) {
+                foreach ($request->file('attachments') as $file) {
+                    $fileName = time() . '_' . $file->getClientOriginalName();
+                    $path = $file->storeAs('attachments', $fileName, 'public');
+                    
+                    $post->attachments()->create([
+                        'file_path' => $path,
+                        'original_filename' => $file->getClientOriginalName(),
+                        'file_size' => $file->getSize(),
+                        'mime_type' => $file->getMimeType()
+                    ]);
+                }
+            }
+
             return redirect()
                 ->route('posts.index', $board->identifier)
                 ->with('success', '게시물이 성공적으로 작성되었습니다.');
-            
+                
         } catch (ValidationException $e) {
-            return back()
-                ->withInput()
-                ->withErrors($e->errors());
+            return back()->withInput()->withErrors($e->errors());
         } catch (\Exception $e) {
             \Log::error('게시물 작성 오류: ' . $e->getMessage());
-            
-            return back()
-                ->withInput()
-                ->withErrors(['error' => '게시물 작성 중 오류가 발생했습니다.']);
+            return back()->withInput()->withErrors(['error' => '게시물 작성 중 오류가 발생했습니다.']);
         }
     }
 
     public function show($identifier, $id)
     {
         $board = Board::where('identifier', $identifier)->firstOrFail();
-        $post = Post::findOrFail($id);
+        $post = Post::with('attachments')->findOrFail($id);
         
         // 게시물이 현재 게시판에 속하는지 확인
         if ($post->board_id !== $board->id) {
@@ -133,10 +145,37 @@ class PostController extends Controller
             $validated = $request->validate([
                 'title' => 'required|string|max:255',
                 'content' => 'required|string',
+                'attachments.*' => 'nullable|file|max:10240',
+                'delete_attachments.*' => 'nullable|integer|exists:attachments,id'
             ], [
-                'title.required' => '제목을 입력해주세요.',
-                'content.required' => '내용을 입력해주세요.',
+                'attachments.*.max' => '파일 크기는 10MB를 초과할 수 없습니다.'
             ]);
+
+            // 삭제할 첨부파일 처리
+            if ($request->has('delete_attachments')) {
+                foreach ($request->delete_attachments as $attachmentId) {
+                    $attachment = $post->attachments()->find($attachmentId);
+                    if ($attachment) {
+                        \Storage::disk('public')->delete($attachment->file_path);
+                        $attachment->delete();
+                    }
+                }
+            }
+
+            // 새로운 첨부파일 추가
+            if ($request->hasFile('attachments')) {
+                foreach ($request->file('attachments') as $file) {
+                    $fileName = time() . '_' . $file->getClientOriginalName();
+                    $path = $file->storeAs('attachments', $fileName, 'public');
+                    
+                    $post->attachments()->create([
+                        'file_path' => $path,
+                        'original_filename' => $file->getClientOriginalName(),
+                        'file_size' => $file->getSize(),
+                        'mime_type' => $file->getMimeType()
+                    ]);
+                }
+            }
 
             $post->update([
                 'title' => $validated['title'],
@@ -146,17 +185,12 @@ class PostController extends Controller
             return redirect()
                 ->route('posts.show', [$board->identifier, $post->id])
                 ->with('success', '게시물이 성공적으로 수정되었습니다.');
-            
+                
         } catch (ValidationException $e) {
-            return back()
-                ->withInput()
-                ->withErrors($e->errors());
+            return back()->withInput()->withErrors($e->errors());
         } catch (\Exception $e) {
             \Log::error('게시물 수정 오류: ' . $e->getMessage());
-            
-            return back()
-                ->withInput()
-                ->withErrors(['error' => '게시물 수정 중 오류가 발생했습니다.']);
+            return back()->withInput()->withErrors(['error' => '게시물 수정 중 오류가 발생했습니다.']);
         }
     }
 
@@ -174,15 +208,19 @@ class PostController extends Controller
         }
         
         try {
-            $post->delete();
+            // 첨부파일 삭제
+            foreach ($post->attachments as $attachment) {
+                \Storage::disk('public')->delete($attachment->file_path);
+            }
+            
+            $post->delete(); // cascade 삭제로 attachments도 함께 삭제됨
             
             return redirect()
                 ->route('posts.index', $board->identifier)
                 ->with('success', '게시물이 성공적으로 삭제되었습니다.');
-            
+                
         } catch (\Exception $e) {
             \Log::error('게시물 삭제 오류: ' . $e->getMessage());
-            
             return back()->withErrors(['error' => '게시물 삭제 중 오류가 발생했습니다.']);
         }
     }

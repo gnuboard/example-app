@@ -14,7 +14,7 @@ class FakeUsersSeeder extends Seeder
         $faker = Faker::create('ko_KR');
         
         $this->command->info('가짜 사용자 생성 시작...');
-        $bar = $this->command->getOutput()->createProgressBar(1000);
+        $bar = $this->command->getOutput()->createProgressBar(100);
 
         // 소셜 로그인 타입 배열
         $socialTypes = ['google', 'github', 'kakao', 'naver'];
@@ -25,8 +25,8 @@ class FakeUsersSeeder extends Seeder
             config('constants.user_levels.verified')
         ];
 
-        // 1000명의 가짜 사용자 생성
-        for ($i = 0; $i < 1000; $i++) {
+        // 100명의 가짜 사용자 생성
+        for ($i = 0; $i < 100; $i++) {
             $isSocialUser = $faker->boolean(30); // 30% 확률로 소셜 로그인 사용자
             $isVerified = $faker->boolean(80);   // 80% 확률로 이메일 인증된 사용자
             
@@ -60,6 +60,6 @@ class FakeUsersSeeder extends Seeder
         }
 
         $bar->finish();
-        $this->command->info("\n1000명의 가짜 사용자가 생성되었습니다.");
+        $this->command->info("\n100명의 가짜 사용자가 생성되었습니다.");
     }
 } 

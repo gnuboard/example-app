@@ -10,6 +10,7 @@ class Post extends Model
         'user_id',
         'title',
         'content',
+        'attachment',
     ];
 
     public function board()
@@ -30,6 +31,11 @@ class Post extends Model
     public function voters()
     {
         return $this->belongsToMany(User::class, 'post_votes')->withTimestamps()->withPivot('is_like');
+    }
+
+    public function attachments()
+    {
+        return $this->hasMany(Attachment::class);
     }
 
     protected static function boot()

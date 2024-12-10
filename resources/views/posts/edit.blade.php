@@ -4,7 +4,9 @@
             <div class="p-6 bg-white border-b border-gray-200">
                 <h1 class="text-2xl font-bold mb-4">게시물 수정</h1>
 
-                <form action="{{ route('posts.update', [$board->identifier, $post->id]) }}" method="POST">
+                <form action="{{ route('posts.update', [$board->identifier, $post->id]) }}" 
+                      method="POST" 
+                      enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
                     @include('posts._form', ['submitButtonText' => '수정하기'])

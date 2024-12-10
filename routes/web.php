@@ -10,6 +10,7 @@ use App\Http\Controllers\Auth\SocialiteController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\BoardController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\AttachmentController;
 
 Route::get('/', function () {
     return view('main');
@@ -78,13 +79,29 @@ Route::resource('boards', BoardController::class);
 //     ->name('boards.showByIdentifier')
 //     ->where('identifier', '^(?!admin|boards|login|register|profile).*$');
 
-Route::get('/{identifier}/create', [PostController::class, 'create'])->name('posts.create');
-Route::post('/{identifier}', [PostController::class, 'store'])->name('posts.store');
-Route::get('/{identifier}/{id}', [PostController::class, 'show'])->name('posts.show');
-Route::get('/{identifier}/{id}/edit', [PostController::class, 'edit'])->name('posts.edit');
-Route::put('/{identifier}/{id}', [PostController::class, 'update'])->name('posts.update');
-Route::delete('/{identifier}/{id}', [PostController::class, 'destroy'])->name('posts.destroy');
+Route::get('/attachments/{post}', [AttachmentController::class, 'show'])->name('attachments.show');
+Route::get('/attachments/{post}/download', [AttachmentController::class, 'download'])->name('attachments.download');
 
-Route::get('/{identifier}', [PostController::class, 'index'])
-    ->name('posts.index')
-    ->where('identifier', '^(?!admin|boards|login|register|profile).*$');
+// Route::get('/{identifier}/create', [PostController::class, 'create'])->name('posts.create');
+// Route::post('/{identifier}', [PostController::class, 'store'])->name('posts.store');
+// Route::get('/{identifier}/{id}', [PostController::class, 'show'])->name('posts.show');
+// Route::get('/{identifier}/{id}/edit', [PostController::class, 'edit'])->name('posts.edit');
+// Route::put('/{identifier}/{id}', [PostController::class, 'update'])->name('posts.update');
+// Route::delete('/{identifier}/{id}', [PostController::class, 'destroy'])->name('posts.destroy');
+
+// Route::get('/{identifier}', [PostController::class, 'index'])
+//     ->name('posts.index')
+//     ->where('identifier', '^(?!admin|boards|login|register|profile).*$');
+
+Route::where([
+    'identifier' => '^(?!admin|boards|login|register|profile|public).*$',
+    'id' => '[0-9]+'
+])->group(function () {
+    Route::get('/{identifier}/create', [PostController::class, 'create'])->name('posts.create');
+    Route::post('/{identifier}', [PostController::class, 'store'])->name('posts.store');
+    Route::get('/{identifier}/{id}', [PostController::class, 'show'])->name('posts.show');
+    Route::get('/{identifier}/{id}/edit', [PostController::class, 'edit'])->name('posts.edit');
+    Route::put('/{identifier}/{id}', [PostController::class, 'update'])->name('posts.update');
+    Route::delete('/{identifier}/{id}', [PostController::class, 'destroy'])->name('posts.destroy');
+    Route::get('/{identifier}', [PostController::class, 'index'])->name('posts.index');
+});

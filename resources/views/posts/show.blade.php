@@ -16,6 +16,30 @@
                     {!! nl2br(e($post->content)) !!}
                 </div>
 
+                @if($post->attachments->count() > 0)
+                    <div class="attachments mt-6">
+                        <h4 class="font-bold mb-2">첨부파일</h4>
+                        <ul class="space-y-2">
+                            @foreach($post->attachments as $attachment)
+                                <li>
+                                    @if(Str::startsWith($attachment->mime_type, 'image/'))
+                                        <div class="mb-2">
+                                            <img src="{{ Storage::url($attachment->file_path) }}" 
+                                                 alt="{{ $attachment->original_filename }}"
+                                                 class="max-w-lg rounded shadow-sm">
+                                        </div>
+                                    @endif
+                                    <a href="{{ route('attachments.download', $attachment) }}" 
+                                       class="text-blue-600 hover:text-blue-800">
+                                        {{ $attachment->original_filename }}
+                                        ({{ number_format($attachment->file_size / 1024, 2) }} KB)
+                                    </a>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
                 <div class="mt-6 flex justify-between">
                     <a href="{{ route('posts.index', $board->identifier) }}" 
                        class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">
