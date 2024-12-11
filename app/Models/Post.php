@@ -11,6 +11,7 @@ class Post extends Model
         'title',
         'content',
         'attachment',
+        'comments_count',
     ];
 
     public function board()
@@ -46,14 +47,6 @@ class Post extends Model
     public function rootComments()
     {
         return $this->hasMany(Comment::class)->whereNull('parent_id');
-    }
-
-    public function allCommentsOrdered()
-    {
-        return $this->hasMany(Comment::class)
-                    ->whereNull('parent_id')
-                    ->orderBy('created_at', 'desc')
-                    ->with('replies');
     }
 
     protected static function boot()

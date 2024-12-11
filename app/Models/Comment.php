@@ -30,16 +30,15 @@ class Comment extends Model
         return $this->belongsTo(Post::class);
     }
 
-    // 부모 댓글
-    public function parent()
-    {
-        return $this->belongsTo(Comment::class, 'parent_id');
-    }
+    // // 부모 댓글
+    // public function parent()
+    // {
+    //     return $this->belongsTo(Comment::class, 'parent_id');
+    // }
 
-    // 대댓글들
-    public function replies()
-    {
-        return $this->hasMany(Comment::class, 'parent_id')
-            ->orderBy('created_at', 'asc');
-    }
+    // // 대댓글들
+    // public function replies()
+    // {
+    //     return $this->hasMany(Comment::class, 'parent_id')->whereNull('deleted_at');
+    // }
 } 

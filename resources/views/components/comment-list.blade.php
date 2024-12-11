@@ -21,25 +21,25 @@
 <div class="space-y-4">
     @foreach($comments as $comment)
         <div class="comment-container">
-            {{-- 원 댓글 --}}
+            {{-- 댓글 --}}
             <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700">
                 <div class="flex justify-between items-start">
                     <div class="flex items-center space-x-2">
-                        <span class="font-medium">{{ $comment->user->name }}</span>
-                        <span class="text-sm text-gray-500">{{ $comment->created_at->format('Y-m-d H:i') }}</span>
+                        <span class="text-sm font-medium">{{ $comment->user->name }}</span>
+                        <span class="text-xs text-gray-500">{{ $comment->created_at->format('Y-m-d H:i') }}</span>
                     </div>
                     @if(Auth::id() === $comment->user_id)
                         <div class="flex space-x-2">
-                            <button class="text-sm text-blue-500 hover:text-blue-600">수정</button>
-                            <button class="text-sm text-red-500 hover:text-red-600">삭제</button>
+                            <button class="text-xs text-blue-500 hover:text-blue-600">수정</button>
+                            <button class="text-xs text-red-500 hover:text-red-600">삭제</button>
                         </div>
                     @endif
                 </div>
                 <div class="mt-2">
-                    <p class="text-gray-700 dark:text-gray-300">{{ $comment->content }}</p>
+                    <p class="text-sm text-gray-700 dark:text-gray-300">{{ $comment->content }}</p>
                 </div>
                 <div class="mt-2">
-                    <button class="text-sm text-blue-500 hover:text-blue-600" onclick="toggleReplyForm('{{ $comment->id }}')">
+                    <button class="text-xs text-blue-500 hover:text-blue-600" onclick="toggleReplyForm('{{ $comment->id }}')">
                         답글쓰기
                     </button>
                 </div>
@@ -63,33 +63,6 @@
                 </form>
             </div>
 
-            {{-- 대댓글 목록 --}}
-            @if($comment->replies->count() > 0)
-                <div class="ml-8 mt-2 space-y-2">
-                    @foreach($comment->replies as $reply)
-                        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg shadow-sm border border-gray-100 dark:border-gray-600">
-                            <div class="flex justify-between items-start">
-                                <div class="flex items-center space-x-2">
-                                    <span class="font-medium">{{ $reply->user->name }}</span>
-                                    <span class="text-sm text-gray-500">{{ $reply->created_at->format('Y-m-d H:i') }}</span>
-                                </div>
-                                @if(Auth::id() === $reply->user_id)
-                                    <div class="flex space-x-2">
-                                        <button class="text-sm text-blue-500 hover:text-blue-600">수정</button>
-                                        <button class="text-sm text-red-500 hover:text-red-600">삭제</button>
-                                    </div>
-                                @endif
-                            </div>
-                            <div class="mt-2">
-                                @if($reply->mentioned_user_name)
-                                    <span class="text-blue-500">{{ $reply->mentioned_user_name }}</span>
-                                @endif
-                                <p class="text-gray-700 dark:text-gray-300">{{ $reply->content }}</p>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-            @endif
         </div>
     @endforeach
 </div>

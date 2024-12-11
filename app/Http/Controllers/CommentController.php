@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Comment;
 use Illuminate\Http\Request;
 use App\Models\Board;
+use App\Models\Post;
 
 class CommentController extends Controller
 {
@@ -35,6 +36,23 @@ class CommentController extends Controller
             ]);
         });
 
+        // 댓글 수 증가
+        Post::where('id', $request->post_id)->increment('comments_count');
+
         return back()->with('success', '댓글이 작성되었습니다.');
+    }
+
+    public function destroy(Comment $comment)
+    {
+        if (auth()->id() !== $comment->user_id) {
+            return back()->with('error', '권한이 없습니다.');
+        }
+
+        // 댓글 수 감소
+        Post::where('id', $comment->post_id)->decrement('comments_count');
+        
+        $comment->delete();
+
+        return back()->with('success', '댓글이 삭제되었습니다.');
     }
 } 

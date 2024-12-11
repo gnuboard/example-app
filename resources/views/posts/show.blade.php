@@ -44,7 +44,7 @@
                 </div>
 
                 <div class="border-b border-gray-100 pb-6 mb-6">
-                    <h1 class="text-3xl font-bold mb-4 text-gray-900">{{ $post->title }}</h1>
+                    <h1 class="text-xl font-bold mb-4 text-gray-900">{{ $post->title }}</h1>
                     
                     <div class="flex items-center text-sm text-gray-500 space-x-4">
                         <div class="flex items-center">
@@ -69,7 +69,7 @@
                     </div>
                 </div>
 
-                <div class="prose max-w-none mb-8 text-gray-800 leading-relaxed">
+                <div class="prose prose-sm max-w-none mb-8 text-gray-800 leading-relaxed">
                     {!! nl2br(e($post->content)) !!}
                 </div>
 
@@ -94,21 +94,22 @@
                 @endif
 
                 <div class="mt-8">
-                    <h3 class="text-lg font-medium mb-4">댓글</h3>
-                    <!-- @dump($post->allCommentsOrdered) -->
+                    <h3 class="text-base font-medium mb-4">
+                        댓글 ({{ $post->comments_count }})
+                    </h3>
                     <x-comment-list :post="$post" :comments="$comments" />
                 </div>
 
                 <div class="flex justify-between pt-6 border-t border-gray-100">
                     <a href="{{ route('posts.index', ['identifier' => $board->identifier, 'search_type' => request('search_type'), 'search' => request('search'), 'page' => request('page')]) }}" 
-                       class="inline-flex items-center px-6 py-3 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200">
+                       class="inline-flex items-center px-6 py-3 border border-gray-300 text-xs font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200">
                         목록으로
                     </a>
                     
                     @if(auth()->id() === $post->user_id)
                         <div class="space-x-3">
                             <a href="{{ route('posts.edit', [$board->identifier, $post->id]) }}" 
-                               class="inline-flex items-center px-6 py-3 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200">
+                               class="inline-flex items-center px-6 py-3 border border-transparent text-xs font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200">
                                 수정
                             </a>
                             <form action="{{ route('posts.destroy', [$board->identifier, $post->id]) }}" 
@@ -117,7 +118,7 @@
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" 
-                                        class="inline-flex items-center px-6 py-3 border border-transparent text-sm font-medium rounded-lg text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-200"
+                                        class="inline-flex items-center px-6 py-3 border border-transparent text-xs font-medium rounded-lg text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-200"
                                         onclick="return confirm('정말 삭제하시겠습니까?')">
                                     삭제
                                 </button>

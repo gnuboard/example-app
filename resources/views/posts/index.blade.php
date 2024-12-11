@@ -44,6 +44,9 @@
                                                 ]) }}" 
                                                    class="text-blue-500 hover:text-blue-600">
                                                     {{ $post->title }}
+                                                    @if($post->comments_count > 0)
+                                                        <span class="ml-1 text-gray-500 dark:text-gray-400">[{{ $post->comments_count }}]</span>
+                                                    @endif
                                                 </a>
                                             </td>
                                             <td class="px-4 py-2 whitespace-nowrap text-sm">{{ optional($post->user)->name }}</td>

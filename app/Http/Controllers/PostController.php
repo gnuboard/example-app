@@ -118,7 +118,6 @@ class PostController extends Controller
     {
         $board = Board::where('identifier', $identifier)->firstOrFail();
         $post = Post::with('attachments')->findOrFail($id);
-        $post->load('allCommentsOrdered');
         
         // 게시물이 현재 게시판에 속하는지 확인
         if ($post->board_id !== $board->id) {
@@ -164,12 +163,13 @@ class PostController extends Controller
             ->orderBy('id', 'desc')
             ->first();
 
-        // 댓글 목록 조회 (부모 댓글만)
-        $comments = Comment::where('post_id', $id)
-            ->whereNull('parent_id')
+        $comments = Comment::with('user')
+            ->where('post_id', $id)
+            // ->whereNull('parent_id')  // 최상위 댓글만
             ->whereNull('deleted_at')
             ->orderBy('created_at', 'asc')
             ->get();
+    
         
         return view('posts.show', compact('board', 'post', 'previousPost', 'nextPost', 'comments'));
     }
@@ -285,7 +285,7 @@ class PostController extends Controller
                 ->with('success', '게시물이 성공적으로 삭제되었습니다.');
                 
         } catch (\Exception $e) {
-            \Log::error('게시물 ��제 오류: ' . $e->getMessage());
+            \Log::error('게시물 삭제 오류: ' . $e->getMessage());
             return back()->withErrors(['error' => '게시물 삭제 중 오류가 발생했습니다.']);
         }
     }
