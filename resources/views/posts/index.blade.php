@@ -39,7 +39,8 @@
                                                     'identifier' => $board->identifier, 
                                                     'id' => $post->id,
                                                     'search_type' => request()->get('search_type'),
-                                                    'search' => request()->get('search')
+                                                    'search' => request()->get('search'),
+                                                    'page' => request()->get('page')
                                                 ]) }}" 
                                                    class="text-blue-500 hover:text-blue-600">
                                                     {{ $post->title }}

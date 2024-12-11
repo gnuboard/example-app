@@ -97,6 +97,7 @@ Route::where([
     'identifier' => '^(?!admin|boards|login|register|profile|public).*$',
     'id' => '[0-9]+'
 ])->group(function () {
+    Route::get('/{identifier}/get-page', [PostController::class, 'getPage'])->name('posts.get-page');
     Route::get('/{identifier}/create', [PostController::class, 'create'])->name('posts.create');
     Route::post('/{identifier}', [PostController::class, 'store'])->name('posts.store');
     Route::get('/{identifier}/{id}', [PostController::class, 'show'])->name('posts.show');

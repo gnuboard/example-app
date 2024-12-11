@@ -25,7 +25,7 @@ class PostController extends Controller
             return view('posts.index', [
                 'board' => $board,
                 'error' => '목록을 볼 권한이 없습니다.',
-                'posts' => Post::where('id', 0)->paginate(15)
+                'posts' => Post::where('id', 0)->paginate(config('constants.per_page'))
             ]);
         }
         
@@ -47,7 +47,7 @@ class PostController extends Controller
             }
         }
 
-        $posts = $query->orderBy('id', 'desc')->paginate(10)->appends([
+        $posts = $query->orderBy('id', 'desc')->paginate(config('constants.per_page'))->appends([
             'search_type' => $request->search_type,
             'search' => $request->search
         ]);
@@ -109,11 +109,11 @@ class PostController extends Controller
             return back()->withInput()->withErrors($e->errors());
         } catch (\Exception $e) {
             \Log::error('게시물 작성 오류: ' . $e->getMessage());
-            return back()->withInput()->withErrors(['error' => '게시물 작성 중 오류가 발생했습니다.']);
+            return back()->withInput()->withErrors(['error' => '게시��� 작성 중 오류가 발생했습니다.']);
         }
     }
 
-    public function show($identifier, $id)
+    public function show(Request $request, $identifier, $id)
     {
         $board = Board::where('identifier', $identifier)->firstOrFail();
         $post = Post::with('attachments')->findOrFail($id);
@@ -123,27 +123,6 @@ class PostController extends Controller
             abort(404);
         }
 
-        // 검색 조건에 따른 게시글 쿼리 생성
-        $postsQuery = Post::where('board_id', $board->id);
-        
-        if (request('search_type') && request('search')) {
-            $search = request('search');
-            if (request('search_type') === 'title') {
-                $postsQuery->where('title', 'like', "%{$search}%");
-            } elseif (request('search_type') === 'content') {
-                $postsQuery->where('content', 'like', "%{$search}%");
-            } elseif (request('search_type') === 'author') {
-                $postsQuery->whereHas('user', function ($q) use ($search) {
-                    $q->where('name', 'like', '%' . $search . '%');
-                });
-            }
-        }
-
-        // 현재 게시글의 위치를 찾아서 페이지 계산
-        $perPage = 10; // 페이지당 게시글 수
-        $position = $postsQuery->where('id', '>=', $post->id)->count();
-        $page = ceil($position / $perPage);
-            
         // 세션에 저장된 조회 기록 확인
         $viewedPosts = session('viewed_posts', []);
         $sessionKey = 'post_' . $post->id;
@@ -155,7 +134,35 @@ class PostController extends Controller
             session(['viewed_posts' => $viewedPosts]);
         }
 
-        return view('posts.show', compact('board', 'post', 'page'));
+        $query = Post::where('board_id', $board->id);
+        
+        // 검색 조건이 있는 경우 이전글/다음글 쿼리에도 적용
+        if ($request->filled('search') && $request->filled('search_type')) {
+            $search = $request->input('search');
+            $searchType = $request->input('search_type');
+
+            if ($searchType === 'title') {
+                $query->where('title', 'like', '%' . $search . '%');
+            } elseif ($searchType === 'content') {
+                $query->where('content', 'like', '%' . $search . '%');
+            } elseif ($searchType === 'author') {
+                $query->whereHas('user', function ($q) use ($search) {
+                    $q->where('name', 'like', '%' . $search . '%');
+                });
+            }
+        }
+
+        $previousPost = (clone $query)
+            ->where('id', '>', $post->id)
+            ->orderBy('id', 'asc')
+            ->first();
+        
+        $nextPost = (clone $query)
+            ->where('id', '<', $post->id)
+            ->orderBy('id', 'desc')
+            ->first();
+        
+        return view('posts.show', compact('board', 'post', 'previousPost', 'nextPost'));
     }
 
     public function edit($identifier, $id)
