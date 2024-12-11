@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Board;
 use App\Models\Post;
+use App\Models\Comment;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Auth;
@@ -109,7 +110,7 @@ class PostController extends Controller
             return back()->withInput()->withErrors($e->errors());
         } catch (\Exception $e) {
             \Log::error('게시물 작성 오류: ' . $e->getMessage());
-            return back()->withInput()->withErrors(['error' => '게시��� 작성 중 오류가 발생했습니다.']);
+            return back()->withInput()->withErrors(['error' => '게시물 작성 중 오류가 발생했습니다.']);
         }
     }
 
@@ -117,6 +118,7 @@ class PostController extends Controller
     {
         $board = Board::where('identifier', $identifier)->firstOrFail();
         $post = Post::with('attachments')->findOrFail($id);
+        $post->load('allCommentsOrdered');
         
         // 게시물이 현재 게시판에 속하는지 확인
         if ($post->board_id !== $board->id) {
@@ -161,8 +163,15 @@ class PostController extends Controller
             ->where('id', '<', $post->id)
             ->orderBy('id', 'desc')
             ->first();
+
+        // 댓글 목록 조회 (부모 댓글만)
+        $comments = Comment::where('post_id', $id)
+            ->whereNull('parent_id')
+            ->whereNull('deleted_at')
+            ->orderBy('created_at', 'asc')
+            ->get();
         
-        return view('posts.show', compact('board', 'post', 'previousPost', 'nextPost'));
+        return view('posts.show', compact('board', 'post', 'previousPost', 'nextPost', 'comments'));
     }
 
     public function edit($identifier, $id)
@@ -276,7 +285,7 @@ class PostController extends Controller
                 ->with('success', '게시물이 성공적으로 삭제되었습니다.');
                 
         } catch (\Exception $e) {
-            \Log::error('게시물 삭제 오류: ' . $e->getMessage());
+            \Log::error('게시물 ��제 오류: ' . $e->getMessage());
             return back()->withErrors(['error' => '게시물 삭제 중 오류가 발생했습니다.']);
         }
     }

@@ -38,6 +38,24 @@ class Post extends Model
         return $this->hasMany(Attachment::class);
     }
 
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
+
+    public function rootComments()
+    {
+        return $this->hasMany(Comment::class)->whereNull('parent_id');
+    }
+
+    public function allCommentsOrdered()
+    {
+        return $this->hasMany(Comment::class)
+                    ->whereNull('parent_id')
+                    ->orderBy('created_at', 'desc')
+                    ->with('replies');
+    }
+
     protected static function boot()
     {
         parent::boot();

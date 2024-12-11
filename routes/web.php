@@ -11,6 +11,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\BoardController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\AttachmentController;
+use App\Http\Controllers\CommentController;
 
 Route::get('/', function () {
     return view('main');
@@ -56,6 +57,10 @@ Route::middleware('auth')->group(function () {
         return back()->with('message', '인증 링크를 보냈습니다.');
     })->middleware(['throttle:6,1'])->name('verification.send');
 });
+
+Route::post('/comments', [CommentController::class, 'store'])
+    ->name('comments.store')
+    ->middleware('auth');
 
 Route::get('/auth/{provider}/redirect', [SocialiteController::class, 'redirect'])->name('social.redirect');
 Route::get('/auth/{provider}/callback', [SocialiteController::class, 'callback'])->name('social.callback');// Route::get('/auth/{provider}/redirect', [SocialiteController::class, 'redirect'])->name('socialite.redirect');
