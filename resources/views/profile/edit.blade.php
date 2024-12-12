@@ -41,4 +41,35 @@
         </div>
     </div>
 </div>
+
+<!-- 내가 작성한 메모 목록 -->
+<div class="py-6">
+    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="p-6">
+                <h2 class="text-xl font-semibold mb-4 dark:text-white">내가 작성한 메모</h2>
+                @if($writtenMemos->count() > 0)
+                    <div class="space-y-4">
+                        @foreach($writtenMemos as $memo)
+                            <div class="border-b dark:border-gray-700 pb-4">
+                                <div class="flex justify-between items-start mb-2">
+                                    <a href="{{ route('users.profile.show', $memo->targetUser->uuid) }}" 
+                                       class="text-blue-500 hover:text-blue-600 font-medium">
+                                        {{ $memo->targetUser->name }}
+                                    </a>
+                                    <span class="text-sm text-gray-500 dark:text-gray-400">
+                                        {{ $memo->updated_at->format('Y-m-d H:i') }}
+                                    </span>
+                                </div>
+                                <div class="text-gray-600 dark:text-gray-300 whitespace-pre-wrap">{{ $memo->content }}</div>
+                            </div>
+                        @endforeach
+                    </div>
+                @else
+                    <p class="text-gray-500 dark:text-gray-400">작성한 메모가 없습니다.</p>
+                @endif
+            </div>
+        </div>
+    </div>
+</div>
 @endsection

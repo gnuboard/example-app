@@ -39,6 +39,9 @@ Route::post('/logout', [AuthController::class, 'logout'])
     ->middleware('auth');
 
 Route::get('/users/profile/{uuid}', [UserController::class, 'show'])->name('users.profile.show');
+Route::post('/users/memo/{uuid}', [UserController::class, 'saveMemo'])
+    ->middleware(['auth'])->name('users.memo.save');
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
