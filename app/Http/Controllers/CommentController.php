@@ -16,7 +16,7 @@ class CommentController extends Controller
             'board_identifier' => 'required|string|max:255',
             'post_id' => 'required|exists:posts,id',
             'parent_id' => 'nullable|exists:comments,id',
-            'mentioned_user_name' => 'nullable|string|max:255'
+            'mentioned_author' => 'nullable|string|max:255'
         ]);
     
         try {
@@ -65,8 +65,9 @@ class CommentController extends Controller
                     'post_id' => $request->post_id,
                     'board_id' => $board->id,
                     'user_id' => auth()->id(),
+                    'author' => auth()->user()->name,
                     'parent_id' => $actualParentId,
-                    'mentioned_user_name' => $request->mentioned_user_name,
+                    'mentioned_author' => $request->mentioned_author,
                     'sort_order' => $sort_order
                 ]);
             });
@@ -132,7 +133,8 @@ class CommentController extends Controller
             ]);
 
             $comment->update([
-                'content' => $validated['content']
+                'content' => $validated['content'],
+                'author' => auth()->user()->name
             ]);
 
             return back()->with('success', '댓글이 수정되었습니다.');

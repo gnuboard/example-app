@@ -69,12 +69,12 @@
 
                         <div class="mt-6 flex justify-end items-center">
                             <form method="GET" action="{{ route('posts.index', $board->identifier) }}" class="flex gap-3 items-center">
-                                <select name="search_type" class="px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
+                                <select name="search_type" class="w-40 px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
                                     <option value="title" {{ request('search_type') == 'title' ? 'selected' : '' }}>제목</option>
                                     <option value="content" {{ request('search_type') == 'content' ? 'selected' : '' }}>내용</option>
                                     <option value="comment" {{ request('search_type') == 'comment' ? 'selected' : '' }}>댓글</option>
-                                    <option value="writer" {{ request('search_type') == 'writer' ? 'selected' : '' }}>작성자</option>
-                                    <option value="comment_writer" {{ request('search_type') == 'comment_writer' ? 'selected' : '' }}>댓글작성자</option>
+                                    <option value="author" {{ request('search_type') == 'author' ? 'selected' : '' }}>작성자</option>
+                                    <option value="comment_author" {{ request('search_type') == 'comment_author' ? 'selected' : '' }}>댓글작성자</option>
                                 </select>
                                 <input type="text" name="search" placeholder="검색어를 입력하세요" 
                                        class="px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg flex-1 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200" value="{{ request('search') }}">

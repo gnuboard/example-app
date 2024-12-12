@@ -72,7 +72,7 @@
                     <p class="text-sm {{ $comment->trashed() ? 'text-gray-400 italic' : 'text-gray-700 dark:text-gray-300' }}">
                         <span class="text-xs text-gray-500 mr-2">[{{ $comment->id }}]</span>
                         @if($comment->parent_id && !$comment->trashed())
-                            <span class="text-xs text-blue-500 mr-1">{{ $comment->mentioned_user_name }}</span>
+                            <span class="text-xs text-blue-500 mr-1">{{ $comment->mentioned_author }}</span>
                         @endif
                         @if($comment->trashed())
                             삭제된 댓글입니다.
@@ -103,7 +103,7 @@
                     <input type="hidden" name="board_identifier" value="{{ $post->board->identifier }}">
                     <input type="hidden" name="post_id" value="{{ $comment->post_id }}">
                     <input type="hidden" name="parent_id" value="{{ $comment->id }}">
-                    <input type="hidden" name="mentioned_user_name" value="{{ $comment->user->name }}">
+                    <input type="hidden" name="ment" value="{{ $comment->user->name }}">
                     <textarea name="content" rows="2" 
                             class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                             placeholder="{{ $comment->user->name }}님에게 답글 작성"></textarea>

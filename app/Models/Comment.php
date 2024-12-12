@@ -11,11 +11,12 @@ class Comment extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'content',
         'post_id',
         'user_id',
         'parent_id',
-        'mentioned_user_name',
+        'author',
+        'content',
+        'mentioned_author',
         'sort_order'
     ];
 

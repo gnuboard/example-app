@@ -53,7 +53,7 @@ class FakePostsSeeder extends Seeder
             Post::create([
                 'board_id' => $board->id,
                 'user_id' => $user->id,
-                'user_name' => $user->name,  // 기존 사용자의 이름 사용
+                'author' => $user->name,
                 'title' => $title,
                 'content' => $content,
                 'created_at' => $faker->dateTimeBetween('-1 year', 'now'),

@@ -42,8 +42,14 @@ class PostController extends Controller
             } elseif ($searchType === 'content') {
                 $query->where('content', 'like', '%' . $search . '%');
             } elseif ($searchType === 'author') {
-                $query->whereHas('user', function ($q) use ($search) {
-                    $q->where('name', 'like', '%' . $search . '%');
+                $query->where('author', '=', $search);
+            } elseif ($searchType === 'comment') {
+                $query->whereHas('comments', function ($q) use ($search) {
+                    $q->where('content', 'like', '%' . $search . '%');
+                });
+            } elseif ($searchType === 'comment_author') {
+                $query->whereHas('comments', function ($q) use ($search) {
+                    $q->where('author', '=', $search);
                 });
             }
         }
@@ -160,6 +166,10 @@ class PostController extends Controller
             } elseif ($searchType === 'author') {
                 $query->whereHas('user', function ($q) use ($search) {
                     $q->where('name', 'like', '%' . $search . '%');
+                });
+            } elseif ($searchType === 'comment') {
+                $query->whereHas('comments', function ($q) use ($search) {
+                    $q->where('content', 'like', '%' . $search . '%');
                 });
             }
         }
@@ -297,7 +307,7 @@ class PostController extends Controller
                 
         } catch (\Exception $e) {
             \Log::error('게시물 삭제 오류: ' . $e->getMessage());
-            return back()->withErrors(['error' => '게시물 삭제 중 오류가 발생했습니다.']);
+            return back()->withErrors(['error' => '게시��� 삭제 중 오류가 발생했습니다.']);
         }
     }
 }
