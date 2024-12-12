@@ -11,10 +11,10 @@ class Comment extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
+        'content',
         'post_id',
         'user_id',
         'parent_id',
-        'content',
         'mentioned_user_name',
         'sort_order'
     ];
@@ -31,15 +31,21 @@ class Comment extends Model
         return $this->belongsTo(Post::class);
     }
 
-    // // 부모 댓글
-    // public function parent()
-    // {
-    //     return $this->belongsTo(Comment::class, 'parent_id');
-    // }
+    // 부모 댓글 관계 정의
+    public function parent()
+    {
+        return $this->belongsTo(Comment::class, 'parent_id')->withTrashed();
+    }
 
-    // // 대댓글들
-    // public function replies()
-    // {
-    //     return $this->hasMany(Comment::class, 'parent_id')->whereNull('deleted_at');
-    // }
+    // 답글 관계 정의
+    public function replies()
+    {
+        return $this->hasMany(Comment::class, 'parent_id')->withTrashed();
+    }
+
+    // 답글이 있는지 확인하는 메서드
+    public function hasReplies()
+    {
+        return $this->replies()->count() > 0;
+    }
 } 

@@ -28,26 +28,57 @@
                         <span class="text-sm font-medium">{{ $comment->user->name }}</span>
                         <span class="text-xs text-gray-500">{{ $comment->created_at->format('Y-m-d H:i') }}</span>
                     </div>
-                    @if(Auth::id() === $comment->user_id)
-                    <div class="flex space-x-2">
-                        <button type="button" onclick="toggleEditForm({{ $comment->id }})" class="text-xs text-blue-500 hover:text-blue-600">수정</button>
-                        <form action="{{ route('comments.destroy', $comment) }}" method="POST" class="inline" onsubmit="return confirm('정말 이 댓글을 삭제하시겠습니까?');">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="text-xs text-red-500 hover:text-red-600">삭제</button>
-                        </form>
+                    @if(!$comment->trashed())
+                    <div class="relative" x-data="{ open: false }">
+                        <button @click="open = !open" class="text-gray-500 hover:text-gray-700">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z">
+                                </path>
+                            </svg>
+                        </button>
+                        <div x-show="open" 
+                             @click.away="open = false"
+                             class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                            @if(Auth::id() === $comment->user_id)
+                                <button type="button" 
+                                        onclick="toggleEditForm({{ $comment->id }})" 
+                                        class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    수정
+                                </button>
+                                <form action="{{ route('comments.destroy', $comment) }}" 
+                                      method="POST" 
+                                      class="block" 
+                                      onsubmit="return confirm('정말 이 댓글을 삭제하시겠습니까?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" 
+                                            class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
+                                        삭제
+                                    </button>
+                                </form>
+                            @endif
+                            <button type="button"
+                                    onclick="toggleReplyForm('{{ $comment->id }}')"
+                                    class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                답글 쓰기
+                            </button>
+                        </div>
                     </div>
                     @endif
                 </div>
 
                 {{-- 댓글 내용 (일반 보기) --}}
                 <div id="comment-content-{{ $comment->id }}" class="mt-2">
-                    <p class="text-sm text-gray-700 dark:text-gray-300">
+                    <p class="text-sm {{ $comment->trashed() ? 'text-gray-400 italic' : 'text-gray-700 dark:text-gray-300' }}">
                         <span class="text-xs text-gray-500 mr-2">[{{ $comment->id }}]</span>
-                        @if($comment->parent_id)
+                        @if($comment->parent_id && !$comment->trashed())
                             <span class="text-xs text-blue-500 mr-1">{{ $comment->mentioned_user_name }}</span>
                         @endif
-                        {{ $comment->content }}
+                        @if($comment->trashed())
+                            삭제된 댓글입니다.
+                        @else
+                            {{ $comment->content }}
+                        @endif
                     </p>
                 </div>
 
@@ -62,13 +93,6 @@
                             <button type="button" onclick="toggleEditForm({{ $comment->id }})" class="px-3 py-1 bg-gray-500 text-white rounded-lg hover:bg-gray-600 text-xs">취소</button>
                         </div>
                     </form>
-                </div>
-
-                {{-- 답글 버튼 --}}
-                <div class="mt-2 flex justify-end">
-                    <button class="text-xs text-blue-500 hover:text-blue-600" onclick="toggleReplyForm('{{ $comment->id }}')">
-                        답글쓰기
-                    </button>
                 </div>
             </div>
 
@@ -89,6 +113,7 @@
                     </button>
                 </form>
             </div>
+
         </div>
     @endforeach
 </div>
@@ -100,7 +125,7 @@ function toggleReplyForm(commentId) {
 }
 
 function toggleEditForm(commentId) {
-    console.log('Toggle edit form for comment:', commentId); // 디버깅용
+    console.log('Toggle edit form for comment:', commentId);
     const contentElement = document.getElementById(`comment-content-${commentId}`);
     const formElement = document.getElementById(`edit-form-${commentId}`);
     

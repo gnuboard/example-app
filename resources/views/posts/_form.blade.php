@@ -23,7 +23,7 @@
     </div>
 
     <div>
-        <label for="attachments" class="block text-sm font-medium text-gray-700">첨���파일</label>
+        <label for="attachments" class="block text-sm font-medium text-gray-700">첨부파일</label>
         <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md"
              id="dropzone"
              ondrop="handleDrop(event)"

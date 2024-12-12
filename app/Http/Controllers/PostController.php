@@ -165,8 +165,8 @@ class PostController extends Controller
 
         $comments = Comment::with('user')
             ->where('post_id', $id)
-            ->whereNull('deleted_at')
             ->orderBy('sort_order', 'asc')  // parent_id 대신 sort_order로 정렬
+            ->withTrashed()
             ->get();
         
         return view('posts.show', compact('board', 'post', 'previousPost', 'nextPost', 'comments'));
