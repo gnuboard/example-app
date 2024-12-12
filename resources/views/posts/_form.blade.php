@@ -1,3 +1,11 @@
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+<!-- Summernote CSS/JS -->
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/lang/summernote-ko-KR.min.js"></script>
+
 <div class="space-y-4">
     <div>
         <label for="title" class="block text-sm font-medium text-gray-700">제목</label>
@@ -15,8 +23,7 @@
         <label for="content" class="block text-sm font-medium text-gray-700">내용</label>
         <textarea name="content" 
                   id="content" 
-                  rows="10" 
-                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">{{ old('content', $post->content ?? '') }}</textarea>
+                  class="summernote">{{ old('content', $post->content ?? '') }}</textarea>
         @error('content')
             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
         @enderror
@@ -259,4 +266,34 @@ function removeFile(index) {
     // 파일 목록 UI 업데이트
     updateFileList();
 }
+
+$(document).ready(function() {
+    $('.summernote').summernote({
+        height: 300,
+        minHeight: null,
+        maxHeight: null,
+        focus: false,
+        lang: 'ko-KR',
+        toolbar: [
+            ['style', ['style']],
+            ['font', ['bold', 'underline', 'clear']],
+            ['color', ['color']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['table', ['table']],
+            ['insert', ['link', 'picture']],
+            ['view', ['fullscreen', 'codeview', 'help']]
+        ],
+        callbacks: {
+            onImageUpload: function(files) {
+                // 이미지 업로드 처리
+                for(let i = 0; i < files.length; i++) {
+                    if(files[i].size > 10 * 1024 * 1024) { // 10MB
+                        alert('이미지 크기는 10MB를 초과할 수 없습니다.');
+                        return;
+                    }
+                }
+            }
+        }
+    });
+});
 </script> 

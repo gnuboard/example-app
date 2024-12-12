@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Stevebauman\Purify\Facades\Purify;
 
 class PostController extends Controller
 {
@@ -97,7 +98,7 @@ class PostController extends Controller
             $post->user_id = auth()->id();
             $post->board_id = $board->id;
             $post->title = $validated['title'];
-            $post->content = $validated['content'];
+            $post->content = Purify::clean($validated['content']);
             $post->save();
 
             // 다중 파일 처리

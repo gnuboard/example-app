@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Stevebauman\Purify\Facades\Purify;
 
 class Post extends Model
 {
@@ -49,6 +50,11 @@ class Post extends Model
     public function rootComments()
     {
         return $this->hasMany(Comment::class)->whereNull('parent_id');
+    }
+
+    public function getContentAttribute($value)
+    {
+        return Purify::clean($value);
     }
 
     protected static function boot()

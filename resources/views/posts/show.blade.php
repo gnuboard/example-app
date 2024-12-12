@@ -70,7 +70,7 @@
                 </div>
 
                 <div class="prose prose-sm max-w-none mb-8 text-gray-800 leading-relaxed">
-                    {!! nl2br(e($post->content)) !!}
+                    {!! $post->content !!}
                 </div>
 
                 @if($post->attachments->count() > 0)
