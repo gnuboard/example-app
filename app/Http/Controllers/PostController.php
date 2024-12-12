@@ -93,8 +93,9 @@ class PostController extends Controller
             ]);
 
             $post = new Post();
-            $post->board_id = $board->id;
+            $post->author = auth()->user()->name;
             $post->user_id = auth()->id();
+            $post->board_id = $board->id;
             $post->title = $validated['title'];
             $post->content = $validated['content'];
             $post->save();
@@ -263,7 +264,8 @@ class PostController extends Controller
 
             $post->update([
                 'title' => $validated['title'],
-                'content' => $validated['content']
+                'content' => $validated['content'],
+                'author' => auth()->user()->name
             ]);
 
             $this->updateAttachmentCount($post); // 첨부파일 수 업데이트
@@ -307,7 +309,7 @@ class PostController extends Controller
                 
         } catch (\Exception $e) {
             \Log::error('게시물 삭제 오류: ' . $e->getMessage());
-            return back()->withErrors(['error' => '게시��� 삭제 중 오류가 발생했습니다.']);
+            return back()->withErrors(['error' => '게시물 삭제 중 오류가 발생했습니다.']);
         }
     }
 }

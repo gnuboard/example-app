@@ -52,7 +52,11 @@
                                                     @endif
                                                 </a>
                                             </td>
-                                            <td class="px-4 py-2 whitespace-nowrap text-sm">{{ optional($post->user)->name }}</td>
+                                            <td class="px-4 py-2 whitespace-nowrap text-sm">
+                                                <a href="#" class="author-link hover:text-blue-500" data-user-uuid="{{ $post->user->uuid }}">
+                                                    {{ $post->author }}
+                                                </a>
+                                            </td>
                                             <td class="hidden md:table-cell px-4 py-2 whitespace-nowrap text-sm">{{ $post->created_at->format('Y-m-d') }}</td>
                                             <td class="hidden md:table-cell px-4 py-2 whitespace-nowrap text-sm">{{ $post->view_count ?? 0 }}</td>
                                         </tr>
@@ -92,4 +96,101 @@
             </div>
         </div>
     </div>
+
+    <!-- 레이어 팝업 -->
+    <div id="userActionLayer" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50">
+        <div class="layer-content absolute bg-white rounded-lg shadow-lg min-w-[200px]">
+            <h3 class="px-4 py-3 font-medium border-b border-gray-200">사용자 메뉴</h3>
+            <ul class="divide-y divide-gray-200">
+                <li>
+                    <a href="#" id="viewProfile" class="block px-4 py-3 hover:bg-gray-50 transition-colors">
+                        회원정보
+                    </a>
+                </li>
+                <li>
+                    <a href="#" id="sendMessage" class="block px-4 py-3 hover:bg-gray-50 transition-colors">
+                        쪽지보내기
+                    </a>
+                </li>
+                <li>
+                    <a href="#" id="viewPosts" class="block px-4 py-3 hover:bg-gray-50 transition-colors">
+                        작성글보기
+                    </a>
+                </li>
+                <li>
+                    <a href="#" id="viewComments" class="block px-4 py-3 hover:bg-gray-50 transition-colors">
+                        작성댓글보기
+                    </a>
+                </li>
+            </ul>
+            <button class="close-btn absolute top-2 right-2 p-2 hover:bg-gray-100 rounded-full">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const layer = document.getElementById('userActionLayer');
+            const layerContent = layer.querySelector('.layer-content');
+            
+            // 작성자 링크 클릭 이벤트
+            document.querySelectorAll('.author-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const userUuid = this.dataset.userUuid;
+                    const rect = this.getBoundingClientRect();
+                    
+                    layerContent.style.left = rect.left + 'px';
+                    layerContent.style.top = (rect.bottom + 5) + 'px';
+                    
+                    // 각 메뉴 항목에 userUuid 설정
+                    layer.querySelectorAll('a').forEach(menuItem => {
+                        menuItem.dataset.userUuid = userUuid;
+                    });
+                    
+                    layer.classList.remove('hidden');
+                });
+            });
+            
+            // 닫기 버튼
+            layer.querySelector('.close-btn').addEventListener('click', () => {
+                layer.classList.add('hidden');
+            });
+            
+            // 레이어 외부 클릭시 닫기
+            layer.addEventListener('click', function(e) {
+                if (e.target === layer) {
+                    layer.classList.add('hidden');
+                }
+            });
+            
+            // 각 메뉴 항목 클릭 이벤트
+            document.getElementById('viewProfile').addEventListener('click', function(e) {
+                e.preventDefault();
+                const userUuid = this.dataset.userUuid;
+                window.location.href = `/users/profile/${userUuid}`;
+            });
+            
+            document.getElementById('sendMessage').addEventListener('click', function(e) {
+                e.preventDefault();
+                const userUuid = this.dataset.userUuid;
+                window.location.href = `/messages/create?to=${userUuid}`;
+            });
+            
+            document.getElementById('viewPosts').addEventListener('click', function(e) {
+                e.preventDefault();
+                const userUuid = this.dataset.userUuid;
+                window.location.href = `/users/${userUuid}/posts`;
+            });
+            
+            document.getElementById('viewComments').addEventListener('click', function(e) {
+                e.preventDefault();
+                const userUuid = this.dataset.userUuid;
+                window.location.href = `/users/${userUuid}/comments`;
+            });
+        });
+    </script>
 </x-app-layout> 

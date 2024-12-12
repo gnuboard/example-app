@@ -21,6 +21,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'name',
         'email',
         'password',
+        'uuid',
         'social_id',
         'social_type',
         'avatar',
@@ -60,5 +61,39 @@ class User extends Authenticatable implements MustVerifyEmail
     public function getProfilePhotoUrlAttribute()
     {
         return $this->avatar ? $this->avatar : null;
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($user) {
+            $user->uuid = (string) Str::uuid();
+        });
+    }
+
+    public function getRouteKeyName()
+    {
+        return 'uuid';
+    }
+
+    public function posts()
+    {
+        return $this->hasMany(Post::class);
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
+
+    public function memos()
+    {
+        return $this->hasMany(UserMemo::class, 'target_user_id');
+    }
+
+    public function writtenMemos()
+    {
+        return $this->hasMany(UserMemo::class, 'user_id');
     }
 }

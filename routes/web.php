@@ -12,6 +12,7 @@ use App\Http\Controllers\BoardController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\AttachmentController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\UserController;
 
 Route::get('/', function () {
     return view('main');
@@ -36,6 +37,8 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/logout', [AuthController::class, 'logout'])
     ->name('logout')
     ->middleware('auth');
+
+Route::get('/users/profile/{uuid}', [UserController::class, 'show'])->name('users.profile.show');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
