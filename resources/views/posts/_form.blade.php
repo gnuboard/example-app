@@ -13,10 +13,11 @@
 
     <div>
         <label for="content" class="block text-sm font-medium text-gray-700">내용</label>
-        <textarea name="content" 
-                  id="content" 
-                  rows="10" 
-                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">{{ old('content', $post->content ?? '') }}</textarea>
+        <div id="content-wrapper">
+            <textarea name="content" 
+                    id="content" 
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">{{ old('content', $post->content ?? '') }}</textarea>
+        </div>
         @error('content')
             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
         @enderror
@@ -89,16 +90,50 @@
     </div>
 </div> 
 
-<script>
-function handleDragOver(event) {
-    event.preventDefault();
-    event.currentTarget.classList.add('border-indigo-500', 'bg-indigo-50');
-}
+@push('styles')
+<style>
+    .ck-editor__editable {
+        min-height: 300px;
+    }
+    .ck-editor__editable_inline {
+        padding: 0 10px;
+    }
+</style>
+@endpush
 
-function handleDragLeave(event) {
-    event.preventDefault();
-    event.currentTarget.classList.remove('border-indigo-500', 'bg-indigo-50');
-}
+@push('scripts')
+<script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+<script>
+    ClassicEditor
+        .create(document.querySelector('#content'), {
+            language: 'ko',
+            toolbar: [
+                'heading',
+                '|',
+                'bold',
+                'italic',
+                'link',
+                'bulletedList',
+                'numberedList',
+                '|',
+                'indent',
+                'outdent',
+                '|',
+                'imageUpload',
+                'blockQuote',
+                'insertTable',
+                'undo',
+                'redo'
+            ],
+            placeholder: '내용을 입력해주세요.'
+        })
+        .then(editor => {
+            console.log('Editor was initialized');
+        })
+        .catch(error => {
+            console.error(error);
+        });
+
 
 // 전역 변수로 파일 목록 관리
 let globalFiles = new DataTransfer();
@@ -259,4 +294,5 @@ function removeFile(index) {
     // 파일 목록 UI 업데이트
     updateFileList();
 }
-</script> 
+</script>
+@endpush

@@ -14,6 +14,7 @@
 
         <!-- Tailwind CSS CDN -->
         <script src="https://cdn.tailwindcss.com"></script>
+        <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
         <script>
             tailwind.config = {
                 theme: {
@@ -34,6 +35,10 @@
                         },
                     },
                 },
+                plugins: [
+                    // Tailwind Typography 플러그인 추가
+                    require('@tailwindcss/typography'),
+                ],
             }
         </script>
 
@@ -74,5 +79,7 @@
                 @endif
             </main>
         </div>
+
+        @stack('scripts')
     </body>
 </html>

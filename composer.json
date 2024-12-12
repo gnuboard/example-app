@@ -13,6 +13,7 @@
         "laravel/framework": "^11.31",
         "laravel/socialite": "^5.16",
         "laravel/tinker": "^2.9",
+        "mews/purifier": "^3.4",
         "socialiteproviders/kakao": "^4.3",
         "socialiteproviders/naver": "^4.1"
     },
