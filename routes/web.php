@@ -56,11 +56,11 @@ Route::middleware('auth')->group(function () {
         $request->user()->sendEmailVerificationNotification();
         return back()->with('message', '인증 링크를 보냈습니다.');
     })->middleware(['throttle:6,1'])->name('verification.send');
-});
 
-Route::post('/comments', [CommentController::class, 'store'])
-    ->name('comments.store')
-    ->middleware('auth');
+    Route::post('/comments', [CommentController::class, 'store'])->name('comments.store');
+    Route::put('/comments/{comment}', [CommentController::class, 'update'])->name('comments.update');
+    Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
+});
 
 Route::get('/auth/{provider}/redirect', [SocialiteController::class, 'redirect'])->name('social.redirect');
 Route::get('/auth/{provider}/callback', [SocialiteController::class, 'callback'])->name('social.callback');// Route::get('/auth/{provider}/redirect', [SocialiteController::class, 'redirect'])->name('socialite.redirect');
