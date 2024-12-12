@@ -20,7 +20,7 @@
 
 <div class="space-y-4">
     @foreach($comments as $comment)
-        <div class="comment-container">
+        <div id="comment-{{ $comment->id }}" class="comment-container {{ $comment->parent_id ? 'ml-8' : '' }}">
             {{-- 댓글 --}}
             <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700">
                 <div class="flex justify-between items-start">
@@ -36,9 +36,15 @@
                     @endif
                 </div>
                 <div class="mt-2">
-                    <p class="text-sm text-gray-700 dark:text-gray-300">{{ $comment->content }}</p>
+                    <p class="text-sm text-gray-700 dark:text-gray-300">
+                        <span class="text-xs text-gray-500 mr-2">[{{ $comment->id }}]</span>
+                        @if($comment->parent_id)
+                            <span class="text-xs text-blue-500 mr-1">{{ $comment->mentioned_user_name }}</span>
+                        @endif
+                        {{ $comment->content }}
+                    </p>
                 </div>
-                <div class="mt-2">
+                <div class="mt-2 flex justify-end">
                     <button class="text-xs text-blue-500 hover:text-blue-600" onclick="toggleReplyForm('{{ $comment->id }}')">
                         답글쓰기
                     </button>
@@ -72,4 +78,4 @@ function toggleReplyForm(commentId) {
     const formElement = document.getElementById(`replyForm-${commentId}`);
     formElement.classList.toggle('hidden');
 }
-</script> 
+</script>

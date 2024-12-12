@@ -16,6 +16,7 @@ class Comment extends Model
         'parent_id',
         'content',
         'mentioned_user_name',
+        'sort_order'
     ];
 
     // 댓글 작성자
