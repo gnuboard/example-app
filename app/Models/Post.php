@@ -7,11 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 class Post extends Model
 {
     protected $fillable = [
+        'board_id',
         'user_id',
         'title',
         'content',
         'attachment',
         'comments_count',
+        'attachment_count',
     ];
 
     public function board()

@@ -11,10 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('comments', function (Blueprint $table) {
-            if (!Schema::hasColumn('comments', 'deleted_at')) {
-                $table->softDeletes();
-            }
+        Schema::table('posts', function (Blueprint $table) {
+            $table->integer('attachment_count')->default(0);
         });
     }
 
@@ -23,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('comments', function (Blueprint $table) {
-            $table->dropSoftDeletes();
+        Schema::table('posts', function (Blueprint $table) {
+            $table->dropColumn('attachment_count');
         });
     }
 };

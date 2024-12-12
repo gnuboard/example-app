@@ -97,7 +97,7 @@ class CommentController extends Controller
             if ($comment->hasReplies()) {
                 // 답글이 있는 경우 내용만 변경하고 소프트 삭제
                 $comment->update([
-                    'content' => '삭제된 댓글입니다.'
+                    'content' => ''
                 ]);
                 $comment->delete(); // 소프트 삭제
                 return back()->with('success', '댓글이 삭제 처리되었습니다.');

@@ -62,6 +62,15 @@ class PostController extends Controller
         return view('posts.create', compact('board'));
     }
 
+    /**
+     * 게시물의 실제 첨부파일 수를 업데이트하는 메소드
+     */
+    private function updateAttachmentCount(Post $post)
+    {
+        $attachmentCount = $post->attachments()->count();
+        $post->update(['attachment_count' => $attachmentCount]);
+    }
+
     public function store(Request $request, $identifier)
     {
         $board = Board::where('identifier', $identifier)->firstOrFail();
@@ -102,10 +111,12 @@ class PostController extends Controller
                 }
             }
 
+            $this->updateAttachmentCount($post); // 첨부파일 수 업데이트
+
             return redirect()
-                ->route('posts.index', $board->identifier)
-                ->with('success', '게시물이 성공적으로 작성되었습니다.');
-                
+            ->route('posts.show', ['identifier' => $identifier, 'id' => $post->id])
+            ->with('success', '게시물이 성공적으로 작성되었습니다.');
+                            
         } catch (ValidationException $e) {
             return back()->withInput()->withErrors($e->errors());
         } catch (\Exception $e) {
@@ -244,6 +255,8 @@ class PostController extends Controller
                 'title' => $validated['title'],
                 'content' => $validated['content']
             ]);
+
+            $this->updateAttachmentCount($post); // 첨부파일 수 업데이트
 
             return redirect()
                 ->route('posts.show', [$board->identifier, $post->id])
