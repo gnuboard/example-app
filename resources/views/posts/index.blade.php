@@ -43,6 +43,9 @@
                                                     'page' => request()->get('page')
                                                 ]) }}" 
                                                    class="text-blue-500 hover:text-blue-600">
+                                                    @if($post->attachment_count > 0)
+                                                        <i class="fas fa-paperclip text-gray-500 dark:text-gray-400 mr-1"></i>
+                                                    @endif
                                                     {{ $post->title }}
                                                     @if($post->comments_count > 0)
                                                         <span class="ml-1 text-gray-500 dark:text-gray-400">[{{ $post->comments_count }}]</span>
